@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, BarChart3, Share2, Info, Github, BookOpen } from "lucide-react";
+import { Moon, Sun, BarChart3, Share2, Info, Github, BookOpen, Layers, ArrowRightLeft } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Link, useLocation } from "react-router";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ interface NavbarProps {
 
 export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
   const [showAboutDialog, setShowAboutDialog] = useState(false);
+  const location = useLocation();
 
   const handleShare = () => {
     if (navigator.share) {
@@ -58,20 +60,57 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
           }
         `}</style>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <motion.div 
-            className="flex items-center gap-3 cursor-pointer"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            onClick={() => window.location.href = '/'}
-          >
-            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm shadow-lg">
-              <BarChart3 className="h-6 w-6 text-white" />
+          <div className="flex items-center gap-8">
+            <motion.div 
+              className="flex items-center gap-3 cursor-pointer"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              onClick={() => window.location.href = '/'}
+            >
+              <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm shadow-lg">
+                <BarChart3 className="h-6 w-6 text-white" />
+              </div>
+              <span className="font-bold text-xl tracking-tight text-white drop-shadow-md hidden sm:block">DSA Visualizer</span>
+            </motion.div>
+
+            <div className="hidden md:flex items-center gap-1">
+              <Link to="/visualizer">
+                <Button 
+                  variant="ghost" 
+                  className={`text-white hover:bg-white/20 ${location.pathname === '/visualizer' ? 'bg-white/20' : ''}`}
+                >
+                  <ArrowRightLeft className="w-4 h-4 mr-2" />
+                  Sorting
+                </Button>
+              </Link>
+              <Link to="/data-structures">
+                <Button 
+                  variant="ghost" 
+                  className={`text-white hover:bg-white/20 ${location.pathname === '/data-structures' ? 'bg-white/20' : ''}`}
+                >
+                  <Layers className="w-4 h-4 mr-2" />
+                  Data Structures
+                </Button>
+              </Link>
             </div>
-            <span className="font-bold text-xl tracking-tight text-white drop-shadow-md">DSA Visualizer</span>
-          </motion.div>
+          </div>
           
           <div className="flex items-center gap-2">
+            {/* Mobile Menu Links (Icon only) */}
+            <div className="md:hidden flex gap-1 mr-2">
+              <Link to="/visualizer">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
+                  <ArrowRightLeft className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Link to="/data-structures">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
+                  <Layers className="w-5 h-5" />
+                </Button>
+              </Link>
+            </div>
+
             <motion.div 
               whileHover={{ scale: 1.1 }} 
               whileTap={{ scale: 0.95 }}
@@ -81,7 +120,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => window.open('https://github.com', '_blank')}
-                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
+                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300 hidden sm:flex"
                 aria-label="GitHub Repository"
               >
                 <Github className="h-5 w-5" />
@@ -97,7 +136,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => window.open('https://en.wikipedia.org/wiki/Sorting_algorithm', '_blank')}
-                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
+                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300 hidden sm:flex"
                 aria-label="Algorithm Documentation"
               >
                 <BookOpen className="h-5 w-5" />

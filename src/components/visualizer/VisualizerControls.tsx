@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlgorithmType } from "@/lib/sortingAlgorithms";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 
 interface VisualizerControlsProps {
   algorithm: AlgorithmType;
@@ -16,8 +16,6 @@ interface VisualizerControlsProps {
   onCustomInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onApplyCustomInput: () => void;
   onGenerateRandomArray: (size: number) => void;
-  onPush: (value: number) => void;
-  onPop: () => void;
 }
 
 export function VisualizerControls({
@@ -31,21 +29,15 @@ export function VisualizerControls({
   onCustomInputChange,
   onApplyCustomInput,
   onGenerateRandomArray,
-  onPush,
-  onPop,
 }: VisualizerControlsProps) {
-  const [pushValue, setPushValue] = useState("");
-
-  const handlePush = () => {
-    const val = parseInt(pushValue);
-    if (!isNaN(val)) {
-      onPush(val);
-      setPushValue("");
-    }
-  };
-
-  const isStackOrQueue = algorithm === "Stack Operations" || algorithm === "Queue Operations";
-  const isStack = algorithm === "Stack Operations";
+  
+  const sortingAlgorithms = [
+    "Bubble Sort",
+    "Merge Sort",
+    "Quick Sort",
+    "Insertion Sort",
+    "Selection Sort"
+  ];
 
   return (
     <motion.div 
@@ -79,13 +71,9 @@ export function VisualizerControls({
                     <SelectValue placeholder="Algorithm A" />
                   </SelectTrigger>
                   <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
-                    <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200">Bubble Sort</SelectItem>
-                    <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200">Merge Sort</SelectItem>
-                    <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200">Quick Sort</SelectItem>
-                    <SelectItem value="Insertion Sort" className="hover:bg-primary/10 transition-colors duration-200">Insertion Sort</SelectItem>
-                    <SelectItem value="Selection Sort" className="hover:bg-primary/10 transition-colors duration-200">Selection Sort</SelectItem>
-                    <SelectItem value="Stack Operations" className="hover:bg-primary/10 transition-colors duration-200">Stack Operations</SelectItem>
-                    <SelectItem value="Queue Operations" className="hover:bg-primary/10 transition-colors duration-200">Queue Operations</SelectItem>
+                    {sortingAlgorithms.map(algo => (
+                      <SelectItem key={algo} value={algo} className="hover:bg-primary/10 transition-colors duration-200">{algo}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -96,13 +84,9 @@ export function VisualizerControls({
                     <SelectValue placeholder="Algorithm B" />
                   </SelectTrigger>
                   <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
-                    <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200">Bubble Sort</SelectItem>
-                    <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200">Merge Sort</SelectItem>
-                    <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200">Quick Sort</SelectItem>
-                    <SelectItem value="Insertion Sort" className="hover:bg-primary/10 transition-colors duration-200">Insertion Sort</SelectItem>
-                    <SelectItem value="Selection Sort" className="hover:bg-primary/10 transition-colors duration-200">Selection Sort</SelectItem>
-                    <SelectItem value="Stack Operations" className="hover:bg-primary/10 transition-colors duration-200">Stack Operations</SelectItem>
-                    <SelectItem value="Queue Operations" className="hover:bg-primary/10 transition-colors duration-200">Queue Operations</SelectItem>
+                    {sortingAlgorithms.map(algo => (
+                      <SelectItem key={algo} value={algo} className="hover:bg-primary/10 transition-colors duration-200">{algo}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -114,111 +98,62 @@ export function VisualizerControls({
                   <SelectValue placeholder="Select Algorithm" />
                 </SelectTrigger>
                 <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
-                  <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Bubble Sort</SelectItem>
-                  <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Merge Sort</SelectItem>
-                  <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Quick Sort</SelectItem>
-                  <SelectItem value="Insertion Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Insertion Sort</SelectItem>
-                  <SelectItem value="Selection Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Selection Sort</SelectItem>
-                  <SelectItem value="Stack Operations" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Stack Operations</SelectItem>
-                  <SelectItem value="Queue Operations" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Queue Operations</SelectItem>
+                  {sortingAlgorithms.map(algo => (
+                    <SelectItem key={algo} value={algo} className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">{algo}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           )}
         </div>
 
-        {!isStackOrQueue && (
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            {[10, 50, 100].map((size) => (
-              <motion.div 
-                key={size} 
-                whileHover={{ scale: 1.05, y: -2 }} 
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300 }}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {[10, 50, 100].map((size) => (
+            <motion.div 
+              key={size} 
+              whileHover={{ scale: 1.05, y: -2 }} 
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => onGenerateRandomArray(size)}
+                className="h-9 md:h-10 hover:gradient-primary hover:text-white hover:border-0 transition-all duration-300 hover:shadow-level-2"
               >
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => onGenerateRandomArray(size)}
-                  className="h-9 md:h-10 hover:gradient-primary hover:text-white hover:border-0 transition-all duration-300 hover:shadow-level-2"
-                >
-                  Random {size}
-                </Button>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                Random {size}
+              </Button>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
-      {isStackOrQueue ? (
+      <motion.div 
+        className="flex gap-2 mt-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <Input 
+          placeholder="Enter numbers (comma-separated)" 
+          value={customInput}
+          onChange={onCustomInputChange}
+          className="font-mono text-sm h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-sm transition-all duration-300"
+          aria-label="Custom array input"
+        />
         <motion.div 
-          className="flex gap-2 mt-4 items-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          whileHover={{ scale: 1.05 }} 
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 300 }}
         >
-          <Input 
-            placeholder="Value" 
-            value={pushValue}
-            onChange={(e) => setPushValue(e.target.value)}
-            type="number"
-            className="font-mono text-sm h-10 md:h-12 w-32 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-sm transition-all duration-300"
-            onKeyDown={(e) => e.key === "Enter" && handlePush()}
-          />
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300 }}
+          <Button 
+            onClick={onApplyCustomInput}
+            className="gradient-primary text-white border-0 shadow-level-2 h-10 md:h-12 px-6 glow-primary transition-all duration-300 hover:shadow-level-3"
           >
-            <Button 
-              onClick={handlePush}
-              className="gradient-primary text-white border-0 shadow-level-2 h-10 md:h-12 px-6 glow-primary transition-all duration-300 hover:shadow-level-3"
-            >
-              {isStack ? "Push" : "Enqueue"}
-            </Button>
-          </motion.div>
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Button 
-              onClick={onPop}
-              variant="destructive"
-              className="h-10 md:h-12 px-6 shadow-level-2 transition-all duration-300 hover:shadow-level-3"
-            >
-              {isStack ? "Pop" : "Dequeue"}
-            </Button>
-          </motion.div>
+            Load
+          </Button>
         </motion.div>
-      ) : (
-        <motion.div 
-          className="flex gap-2 mt-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Input 
-            placeholder="Enter numbers (comma-separated)" 
-            value={customInput}
-            onChange={onCustomInputChange}
-            className="font-mono text-sm h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-sm transition-all duration-300"
-            aria-label="Custom array input"
-          />
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <Button 
-              onClick={onApplyCustomInput}
-              className="gradient-primary text-white border-0 shadow-level-2 h-10 md:h-12 px-6 glow-primary transition-all duration-300 hover:shadow-level-3"
-            >
-              Load
-            </Button>
-          </motion.div>
-        </motion.div>
-      )}
+      </motion.div>
     </motion.div>
   );
 }
