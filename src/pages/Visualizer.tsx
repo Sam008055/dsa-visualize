@@ -30,7 +30,7 @@ export default function Visualizer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const prevStepRef = useRef<SortingStep | null>(null);

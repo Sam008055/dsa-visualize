@@ -44,13 +44,16 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
   useEffect(() => {
     const prevStep = prevStepRef.current;
     const container = document.getElementById("visualizer-container");
-    if (!container) return;
+    if (!container) {
+      prevStepRef.current = step;
+      return;
+    }
 
     const barWidth = Math.max(4, Math.min(60, (containerWidth - (array.length * 2)) / array.length));
     const containerRect = container.getBoundingClientRect();
 
-    // Detect new swaps
-    if (swapping.length > 0 && JSON.stringify(swapping) !== JSON.stringify(prevStep.swapping)) {
+    // Detect new swaps (only if we have a previous step to compare)
+    if (prevStep && swapping.length > 0 && JSON.stringify(swapping) !== JSON.stringify(prevStep.swapping)) {
       swapping.forEach(index => {
         const x = index * (barWidth + 2) + barWidth / 2;
         const y = containerRect.height / 2;
@@ -58,8 +61,8 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
       });
     }
 
-    // Detect new comparisons
-    if (comparing.length > 0 && JSON.stringify(comparing) !== JSON.stringify(prevStep.comparing)) {
+    // Detect new comparisons (only if we have a previous step to compare)
+    if (prevStep && comparing.length > 0 && JSON.stringify(comparing) !== JSON.stringify(prevStep.comparing)) {
       comparing.forEach(index => {
         const x = index * (barWidth + 2) + barWidth / 2;
         const y = containerRect.height / 2;
