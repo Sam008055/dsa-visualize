@@ -92,7 +92,7 @@ export function TimelineScrubber({
       {/* Timeline bar */}
       <div
         ref={barRef}
-        className="relative h-10 bg-muted rounded-lg cursor-pointer group overflow-hidden border"
+        className="relative h-10 bg-muted rounded-lg cursor-pointer group border"
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
