@@ -18,6 +18,7 @@ import {
 import { ArrayVisualizer } from "@/components/visualizer/ArrayVisualizer";
 import { ControlPanel } from "@/components/visualizer/ControlPanel";
 import { InfoPanel } from "@/components/visualizer/InfoPanel";
+import { TimelineScrubber } from "@/components/visualizer/TimelineScrubber";
 import { soundManager } from "@/lib/soundManager";
 
 export default function Visualizer() {
@@ -173,6 +174,11 @@ export default function Visualizer() {
     if (currentStepIndex > 0) setCurrentStepIndex(prev => prev - 1);
   };
   const handleSoundToggle = () => setSoundEnabled(!soundEnabled);
+  
+  const handleTimelineChange = (step: number) => {
+    setIsPlaying(false);
+    setCurrentStepIndex(step);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-300">
@@ -244,6 +250,16 @@ export default function Visualizer() {
               <ArrayVisualizer 
                 step={steps[currentStepIndex]} 
                 maxValue={Math.max(...initialArray, 100)} 
+              />
+            )}
+
+            {/* Timeline Scrubber */}
+            {steps.length > 0 && (
+              <TimelineScrubber
+                currentStep={currentStepIndex}
+                totalSteps={steps.length}
+                onStepChange={handleTimelineChange}
+                isPlaying={isPlaying}
               />
             )}
 
