@@ -118,16 +118,30 @@ export default function Visualizer() {
     }
   }, [isDarkMode]);
 
-  // Update sound manager when sound is toggled
+  // Update sound manager when sound is toggled and handle user interaction
   useEffect(() => {
     soundManager.setEnabled(soundEnabled);
-    if (soundEnabled && soundManager.isEnabled()) {
-      const resumeAudio = () => {
+  }, [soundEnabled]);
+
+  // Initialize audio context on first user interaction
+  useEffect(() => {
+    const initAudio = () => {
+      if (soundEnabled) {
         soundManager.setEnabled(true);
-        document.removeEventListener('click', resumeAudio);
-      };
-      document.addEventListener('click', resumeAudio, { once: true });
-    }
+      }
+    };
+    
+    // Listen for any user interaction to initialize audio
+    const events = ['click', 'touchstart', 'keydown'];
+    events.forEach(event => {
+      document.addEventListener(event, initAudio, { once: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, initAudio);
+      });
+    };
   }, [soundEnabled]);
 
   // Cleanup sound manager on unmount

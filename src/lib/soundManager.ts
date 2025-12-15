@@ -7,16 +7,27 @@ class SoundManager {
 
   constructor() {
     // Initialize AudioContext lazily to avoid autoplay issues
-    if (typeof window !== 'undefined' && 'AudioContext' in window) {
-      this.audioContext = new AudioContext();
+    if (typeof window !== 'undefined') {
+      try {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          this.audioContext = new AudioContextClass();
+        }
+      } catch (error) {
+        console.warn('Failed to initialize AudioContext:', error);
+      }
     }
   }
 
   setEnabled(enabled: boolean) {
     this.enabled = enabled;
     // Resume audio context if it was suspended (browser autoplay policy)
-    if (enabled && this.audioContext?.state === 'suspended') {
-      this.audioContext.resume();
+    if (enabled && this.audioContext) {
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume().catch(err => {
+          console.warn('Failed to resume audio context:', err);
+        });
+      }
     }
   }
 
