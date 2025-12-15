@@ -76,47 +76,47 @@
 }
 
 .dark {
-  /* Improved dark mode with better contrast */
-  --background: oklch(0.15 0.015 264);
-  --foreground: oklch(0.95 0.005 264);
+  /* Premium dark mode with excellent contrast and readability */
+  --background: oklch(0.12 0.01 264);
+  --foreground: oklch(0.98 0.002 264);
   
-  /* Cards with better visibility */
-  --card: oklch(0.20 0.02 264);
-  --card-foreground: oklch(0.95 0.005 264);
+  /* Cards with enhanced visibility and depth */
+  --card: oklch(0.18 0.015 264);
+  --card-foreground: oklch(0.98 0.002 264);
   
-  --popover: oklch(0.20 0.02 264);
-  --popover-foreground: oklch(0.95 0.005 264);
+  --popover: oklch(0.18 0.015 264);
+  --popover-foreground: oklch(0.98 0.002 264);
   
-  --primary: oklch(0.70 0.18 195);
-  --primary-foreground: oklch(0.98 0.002 264);
+  --primary: oklch(0.72 0.20 195);
+  --primary-foreground: oklch(0.12 0.01 264);
   
-  --secondary: oklch(0.25 0.025 264);
-  --secondary-foreground: oklch(0.95 0.005 264);
+  --secondary: oklch(0.22 0.02 264);
+  --secondary-foreground: oklch(0.98 0.002 264);
   
-  --muted: oklch(0.25 0.025 264);
-  --muted-foreground: oklch(0.65 0.015 264);
+  --muted: oklch(0.22 0.02 264);
+  --muted-foreground: oklch(0.70 0.01 264);
   
-  --accent: oklch(0.25 0.025 264);
-  --accent-foreground: oklch(0.95 0.005 264);
+  --accent: oklch(0.22 0.02 264);
+  --accent-foreground: oklch(0.98 0.002 264);
   
-  --destructive: oklch(0.60 0.24 25);
+  --destructive: oklch(0.62 0.25 25);
   --destructive-foreground: oklch(0.98 0.002 264);
   
-  --border: oklch(0.30 0.02 264);
-  --input: oklch(0.28 0.02 264);
-  --ring: oklch(0.70 0.18 195);
-  --chart-1: oklch(0.70 0.18 195);
-  --chart-2: oklch(0.75 0.17 165);
-  --chart-3: oklch(0.70 0.20 45);
-  --chart-4: oklch(0.65 0.22 25);
-  --chart-5: oklch(0.72 0.16 330);
+  --border: oklch(0.28 0.015 264);
+  --input: oklch(0.25 0.015 264);
+  --ring: oklch(0.72 0.20 195);
+  --chart-1: oklch(0.72 0.20 195);
+  --chart-2: oklch(0.78 0.18 165);
+  --chart-3: oklch(0.72 0.22 45);
+  --chart-4: oklch(0.68 0.24 25);
+  --chart-5: oklch(0.75 0.18 330);
   
-  /* Enhanced shadows with subtle glow for dark mode */
-  --shadow-level-1: 0 1px 3px rgba(0, 0, 0, 0.5);
-  --shadow-level-2: 0 4px 8px rgba(0, 0, 0, 0.6);
-  --shadow-level-3: 0 10px 20px rgba(0, 0, 0, 0.7);
-  --shadow-level-4: 0 20px 30px rgba(0, 0, 0, 0.8);
-  --shadow-level-5: 0 25px 50px rgba(0, 0, 0, 0.9);
+  /* Enhanced shadows with depth for dark mode */
+  --shadow-level-1: 0 2px 4px rgba(0, 0, 0, 0.6);
+  --shadow-level-2: 0 6px 12px rgba(0, 0, 0, 0.7);
+  --shadow-level-3: 0 12px 24px rgba(0, 0, 0, 0.8);
+  --shadow-level-4: 0 24px 36px rgba(0, 0, 0, 0.85);
+  --shadow-level-5: 0 30px 60px rgba(0, 0, 0, 0.9);
 }
 
 @layer base {
@@ -159,8 +159,10 @@
   }
   
   .dark .glass-card {
-    background: rgba(30, 41, 59, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(24, 32, 48, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
   
   .shadow-level-1 {

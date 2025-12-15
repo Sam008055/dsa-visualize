@@ -34,7 +34,7 @@ export default function DataStructures() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [secondInputValue, setSecondInputValue] = useState(""); // For path finding or edge creation
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -90,11 +90,16 @@ export default function DataStructures() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [isPlaying, speed, steps.length]);
 
-  // Dark Mode
+  // Dark Mode with smooth transition
   useEffect(() => {
     const root = document.documentElement;
-    if (isDarkMode) root.classList.add("dark");
-    else root.classList.remove("dark");
+    root.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    
+    if (isDarkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
   }, [isDarkMode]);
 
   // Sound
@@ -499,7 +504,7 @@ export default function DataStructures() {
           {/* Header & Controls */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight gradient-primary bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
                 Data Structures
               </h1>
               <p className="text-muted-foreground mt-1">

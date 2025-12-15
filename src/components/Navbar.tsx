@@ -189,10 +189,13 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
               >
                 <motion.div
                   initial={false}
-                  animate={{ rotate: isDarkMode ? 0 : 180, scale: isDarkMode ? 1 : 1.1 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  animate={{ 
+                    rotate: isDarkMode ? 180 : 0,
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
                 >
-                  {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  {isDarkMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
                 </motion.div>
               </Button>
             </motion.div>
