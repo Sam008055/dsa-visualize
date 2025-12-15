@@ -1,5 +1,47 @@
-while (i < n1 && j < n2) {
-      // ...
-      if (L[i] <= R[j]) {
-        arr[k] = L[i];
-        // ...
+export type AlgorithmType = "Bubble Sort" | "Merge Sort" | "Quick Sort";
+
+export interface SortingStep {
+
+}
+
+export function generateSteps(algorithm: AlgorithmType, initialArray: number[]): SortingStep[] {
+  const array = [...initialArray];
+  const steps: SortingStep[] = [];
+  const counters = { comparisons: 0, swaps: 0 };
+  
+  // Initial state
+  steps.push({
+    array: [...array],
+    comparing: [],
+    swapping: [],
+    sorted: [],
+    explanation: "Initial state",
+    comparisons: 0,
+    swaps: 0,
+  });
+
+  switch (algorithm) {
+    case "Bubble Sort":
+      bubbleSort(array, steps, counters);
+      break;
+    case "Merge Sort":
+      mergeSort(array, steps, counters);
+      break;
+    case "Quick Sort":
+      quickSort(array, steps, counters);
+      break;
+  }
+
+  // Final sorted state
+  steps.push({
+    array: [...array],
+    comparing: [],
+    swapping: [],
+    sorted: array.map((_, i) => i),
+    explanation: "Sorting complete!",
+    comparisons: counters.comparisons,
+    swaps: counters.swaps,
+  });
+
+  return steps;
+}

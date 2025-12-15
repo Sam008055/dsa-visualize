@@ -65,6 +65,10 @@ export function VisualizerControls({
                     <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200">Bubble Sort</SelectItem>
                     <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200">Merge Sort</SelectItem>
                     <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200">Quick Sort</SelectItem>
+                    <SelectItem value="Insertion Sort" className="hover:bg-primary/10 transition-colors duration-200">Insertion Sort</SelectItem>
+                    <SelectItem value="Selection Sort" className="hover:bg-primary/10 transition-colors duration-200">Selection Sort</SelectItem>
+                    <SelectItem value="Stack Operations" className="hover:bg-primary/10 transition-colors duration-200">Stack Operations</SelectItem>
+                    <SelectItem value="Queue Operations" className="hover:bg-primary/10 transition-colors duration-200">Queue Operations</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -78,6 +82,10 @@ export function VisualizerControls({
                     <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200">Bubble Sort</SelectItem>
                     <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200">Merge Sort</SelectItem>
                     <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200">Quick Sort</SelectItem>
+                    <SelectItem value="Insertion Sort" className="hover:bg-primary/10 transition-colors duration-200">Insertion Sort</SelectItem>
+                    <SelectItem value="Selection Sort" className="hover:bg-primary/10 transition-colors duration-200">Selection Sort</SelectItem>
+                    <SelectItem value="Stack Operations" className="hover:bg-primary/10 transition-colors duration-200">Stack Operations</SelectItem>
+                    <SelectItem value="Queue Operations" className="hover:bg-primary/10 transition-colors duration-200">Queue Operations</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -92,6 +100,10 @@ export function VisualizerControls({
                   <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Bubble Sort</SelectItem>
                   <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Merge Sort</SelectItem>
                   <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Quick Sort</SelectItem>
+                  <SelectItem value="Insertion Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Insertion Sort</SelectItem>
+                  <SelectItem value="Selection Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Selection Sort</SelectItem>
+                  <SelectItem value="Stack Operations" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Stack Operations</SelectItem>
+                  <SelectItem value="Queue Operations" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Queue Operations</SelectItem>
                 </SelectContent>
               </Select>
             </div>
