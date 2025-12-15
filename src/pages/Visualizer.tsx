@@ -119,6 +119,15 @@ export default function Visualizer() {
   // Update sound manager when sound is toggled
   useEffect(() => {
     soundManager.setEnabled(soundEnabled);
+    // Ensure AudioContext is resumed on user interaction
+    if (soundEnabled && soundManager.isEnabled()) {
+      // Try to resume the audio context
+      const resumeAudio = () => {
+        soundManager.setEnabled(true);
+        document.removeEventListener('click', resumeAudio);
+      };
+      document.addEventListener('click', resumeAudio, { once: true });
+    }
   }, [soundEnabled]);
 
   // Cleanup sound manager on unmount

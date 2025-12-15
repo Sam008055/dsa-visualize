@@ -1,7 +1,7 @@
 // Sound Manager using Web Audio API for programmatic sound generation
 class SoundManager {
   private audioContext: AudioContext | null = null;
-  private enabled: boolean = false;
+  private enabled: boolean = true;
   private lastPlayTime: { [key: string]: number } = {};
   private minInterval = 100; // Minimum 100ms between same sound type (max 10/sec)
 

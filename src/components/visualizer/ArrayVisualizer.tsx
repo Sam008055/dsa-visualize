@@ -52,8 +52,11 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
     const barWidth = Math.max(4, Math.min(60, (containerWidth - (array.length * 2)) / array.length));
     const containerRect = container.getBoundingClientRect();
 
-    // Detect new swaps (only if we have a previous step to compare)
-    if (prevStep && swapping.length > 0 && JSON.stringify(swapping) !== JSON.stringify(prevStep.swapping)) {
+    // Detect new swaps - check if swapping array has changed
+    const hasNewSwap = swapping.length > 0 && 
+      (!prevStep || JSON.stringify(swapping.sort()) !== JSON.stringify(prevStep.swapping.sort()));
+    
+    if (hasNewSwap) {
       swapping.forEach(index => {
         const x = index * (barWidth + 2) + barWidth / 2;
         const y = containerRect.height / 2;
@@ -61,8 +64,11 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
       });
     }
 
-    // Detect new comparisons (only if we have a previous step to compare)
-    if (prevStep && comparing.length > 0 && JSON.stringify(comparing) !== JSON.stringify(prevStep.comparing)) {
+    // Detect new comparisons - check if comparing array has changed
+    const hasNewComparison = comparing.length > 0 && 
+      (!prevStep || JSON.stringify(comparing.sort()) !== JSON.stringify(prevStep.comparing.sort()));
+    
+    if (hasNewComparison) {
       comparing.forEach(index => {
         const x = index * (barWidth + 2) + barWidth / 2;
         const y = containerRect.height / 2;
