@@ -16,7 +16,7 @@ import { TreeVisualizer } from "@/components/visualizer/TreeVisualizer";
 import { GraphVisualizer } from "@/components/visualizer/GraphVisualizer";
 import { insertNode } from "@/lib/algorithms/tree";
 import { bfs, dfs } from "@/lib/algorithms/graph";
-import { TreeNode, GraphData, GraphNode } from "@/lib/algorithms/types";
+import { TreeNode, GraphData, GraphNode, GraphEdge } from "@/lib/algorithms/types";
 
 type DSType = "Stack Operations" | "Queue Operations" | "Tree Operations" | "Graph Operations";
 
@@ -284,56 +284,120 @@ export default function DataStructures() {
   const runDemo = () => {
     setIsPlaying(false);
     const demoSteps: SortingStep[] = [];
-    let currentArray: number[] = [];
     
-    // Helper to add step
-    const addStep = (arr: number[], explanation: string) => {
+    if (activeTab === "Tree Operations") {
+      let root: TreeNode | null = null;
+      const values = [50, 30, 70, 20, 40, 60, 80];
+      
       demoSteps.push({
-        array: [...arr],
+        array: [],
         comparing: [],
         swapping: [],
         sorted: [],
-        explanation,
+        tree: null,
+        explanation: "Starting Binary Search Tree Demo",
         comparisons: 0,
         swaps: 0
       });
-    };
 
-    addStep([], "Starting Demo...");
+      for (const val of values) {
+        root = insertNode(root, val, demoSteps);
+      }
+      
+      demoSteps.push({
+        ...demoSteps[demoSteps.length - 1],
+        explanation: "Tree Demo Complete",
+        current: undefined
+      });
+      
+      setTreeRoot(root);
+    } else if (activeTab === "Graph Operations") {
+      const nodes: GraphNode[] = [
+        { id: "1", value: 1, x: 400, y: 50 },
+        { id: "2", value: 2, x: 250, y: 150 },
+        { id: "3", value: 3, x: 550, y: 150 },
+        { id: "4", value: 4, x: 150, y: 250 },
+        { id: "5", value: 5, x: 350, y: 250 },
+        { id: "6", value: 6, x: 650, y: 250 },
+      ];
+      
+      const edges: GraphEdge[] = [
+        { source: "1", target: "2" },
+        { source: "1", target: "3" },
+        { source: "2", target: "4" },
+        { source: "2", target: "5" },
+        { source: "3", target: "6" },
+        { source: "3", target: "5" },
+      ];
 
-    const operations = [10, 25, 5, 40];
-    
-    // Push operations
-    for (const val of operations) {
-      currentArray = [...currentArray, val];
-      addStep(currentArray, activeTab === "Stack Operations" ? `Push ${val}` : `Enqueue ${val}`);
-    }
+      const demoGraph: GraphData = { nodes, edges, isDirected: false };
+      setGraphData(demoGraph);
 
-    // Pop one
-    if (activeTab === "Stack Operations") {
-      const val = currentArray.pop();
-      addStep(currentArray, `Pop ${val} (LIFO - Last In First Out)`);
+      demoSteps.push({
+        array: [],
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        graph: demoGraph,
+        explanation: "Created Demo Graph",
+        comparisons: 0,
+        swaps: 0
+      });
+
+      bfs(demoGraph, "1", demoSteps);
     } else {
-      const val = currentArray.shift();
-      addStep(currentArray, `Dequeue ${val} (FIFO - First In First Out)`);
-    }
+      // Stack and Queue Demo
+      let currentArray: number[] = [];
+      
+      // Helper to add step
+      const addStep = (arr: number[], explanation: string) => {
+        demoSteps.push({
+          array: [...arr],
+          comparing: [],
+          swapping: [],
+          sorted: [],
+          explanation,
+          comparisons: 0,
+          swaps: 0
+        });
+      };
 
-    // Push another
-    currentArray = [...currentArray, 99];
-    addStep(currentArray, activeTab === "Stack Operations" ? `Push 99` : `Enqueue 99`);
+      addStep([], "Starting Demo...");
 
-    // Pop all
-    while (currentArray.length > 0) {
+      const operations = [10, 25, 5, 40];
+      
+      // Push operations
+      for (const val of operations) {
+        currentArray = [...currentArray, val];
+        addStep(currentArray, activeTab === "Stack Operations" ? `Push ${val}` : `Enqueue ${val}`);
+      }
+
+      // Pop one
       if (activeTab === "Stack Operations") {
         const val = currentArray.pop();
-        addStep(currentArray, `Pop ${val}`);
+        addStep(currentArray, `Pop ${val} (LIFO - Last In First Out)`);
       } else {
         const val = currentArray.shift();
-        addStep(currentArray, `Dequeue ${val}`);
+        addStep(currentArray, `Dequeue ${val} (FIFO - First In First Out)`);
       }
-    }
 
-    addStep([], "Demo Complete");
+      // Push another
+      currentArray = [...currentArray, 99];
+      addStep(currentArray, activeTab === "Stack Operations" ? `Push 99` : `Enqueue 99`);
+
+      // Pop all
+      while (currentArray.length > 0) {
+        if (activeTab === "Stack Operations") {
+          const val = currentArray.pop();
+          addStep(currentArray, `Pop ${val}`);
+        } else {
+          const val = currentArray.shift();
+          addStep(currentArray, `Dequeue ${val}`);
+        }
+      }
+
+      addStep([], "Demo Complete");
+    }
 
     setSteps(demoSteps);
     setCurrentStepIndex(0);
@@ -493,12 +557,10 @@ export default function DataStructures() {
                     </div>
                   </div>
 
-                  {(activeTab === "Stack Operations" || activeTab === "Queue Operations") && (
-                    <Button onClick={runDemo} variant="outline" className="w-full border-primary/50 hover:bg-primary/10">
-                      <Play className="w-4 h-4 mr-2" />
-                      Run Automated Demo
-                    </Button>
-                  )}
+                  <Button onClick={runDemo} variant="outline" className="w-full border-primary/50 hover:bg-primary/10">
+                    <Play className="w-4 h-4 mr-2" />
+                    Run Automated Demo
+                  </Button>
                   
                   <Button onClick={resetDS} variant="ghost" className="w-full">
                     <RotateCcw className="w-4 h-4 mr-2" />
