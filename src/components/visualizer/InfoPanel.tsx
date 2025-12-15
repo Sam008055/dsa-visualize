@@ -1,13 +1,17 @@
 import { AlgorithmType, ALGORITHMS, SortingStep } from "@/lib/sortingAlgorithms";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ComplexityGraph } from "./ComplexityGraph";
 
 interface InfoPanelProps {
   algorithm: AlgorithmType;
   step: SortingStep;
+  currentStepIndex: number;
+  totalSteps: number;
+  arraySize: number;
 }
 
-export function InfoPanel({ algorithm, step }: InfoPanelProps) {
+export function InfoPanel({ algorithm, step, currentStepIndex, totalSteps, arraySize }: InfoPanelProps) {
   const info = ALGORITHMS[algorithm];
 
   return (
@@ -74,6 +78,15 @@ export function InfoPanel({ algorithm, step }: InfoPanelProps) {
           </div>
         </CardContent>
       </Card>
+
+      <ComplexityGraph
+        algorithm={algorithm}
+        currentStep={currentStepIndex}
+        totalSteps={totalSteps}
+        currentComparisons={step.comparisons}
+        currentSwaps={step.swaps}
+        arraySize={arraySize}
+      />
     </div>
   );
 }

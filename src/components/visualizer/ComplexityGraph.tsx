@@ -1,0 +1,175 @@
+import { useMemo } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { AlgorithmType } from "@/lib/sortingAlgorithms";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+interface ComplexityGraphProps {
+  algorithm: AlgorithmType;
+  currentStep: number;
+  totalSteps: number;
+  currentComparisons: number;
+  currentSwaps: number;
+  arraySize: number;
+}
+
+export function ComplexityGraph({
+  algorithm,
+  currentStep,
+  totalSteps,
+  currentComparisons,
+  currentSwaps,
+  arraySize,
+}: ComplexityGraphProps) {
+  const data = useMemo(() => {
+    const points = [];
+    const n = arraySize;
+    const stepInterval = Math.max(1, Math.floor(totalSteps / 50)); // Sample up to 50 points
+    
+    for (let step = 0; step <= currentStep; step += stepInterval) {
+      const progress = step / Math.max(totalSteps - 1, 1);
+      const actualOps = Math.floor((currentComparisons + currentSwaps) * (step / Math.max(currentStep, 1)));
+      
+      let theoreticalOps = 0;
+      
+      // Calculate theoretical operations based on algorithm
+      if (algorithm === "Bubble Sort") {
+        // O(n²) - worst case: n*(n-1)/2 comparisons
+        theoreticalOps = Math.floor((n * (n - 1) / 2) * progress);
+      } else if (algorithm === "Merge Sort") {
+        // O(n log n)
+        theoreticalOps = Math.floor(n * Math.log2(n) * progress * 1.5);
+      } else if (algorithm === "Quick Sort") {
+        // O(n log n) average case
+        theoreticalOps = Math.floor(n * Math.log2(n) * progress * 1.8);
+      }
+      
+      points.push({
+        step,
+        actual: actualOps,
+        theoretical: theoreticalOps,
+      });
+    }
+    
+    // Always include the current step
+    if (currentStep > 0 && currentStep % stepInterval !== 0) {
+      points.push({
+        step: currentStep,
+        actual: currentComparisons + currentSwaps,
+        theoretical: (() => {
+          const progress = currentStep / Math.max(totalSteps - 1, 1);
+          if (algorithm === "Bubble Sort") {
+            return Math.floor((n * (n - 1) / 2) * progress);
+          } else if (algorithm === "Merge Sort") {
+            return Math.floor(n * Math.log2(n) * progress * 1.5);
+          } else {
+            return Math.floor(n * Math.log2(n) * progress * 1.8);
+          }
+        })(),
+      });
+    }
+    
+    return points.sort((a, b) => a.step - b.step);
+  }, [algorithm, currentStep, totalSteps, currentComparisons, currentSwaps, arraySize]);
+
+  const efficiency = useMemo(() => {
+    if (currentStep === 0) return 100;
+    const actualTotal = currentComparisons + currentSwaps;
+    const n = arraySize;
+    let theoreticalWorst = 0;
+    
+    if (algorithm === "Bubble Sort") {
+      theoreticalWorst = (n * (n - 1)) / 2;
+    } else if (algorithm === "Merge Sort") {
+      theoreticalWorst = n * Math.log2(n) * 1.5;
+    } else if (algorithm === "Quick Sort") {
+      theoreticalWorst = n * Math.log2(n) * 1.8;
+    }
+    
+    return Math.min(100, Math.round((actualTotal / theoreticalWorst) * 100));
+  }, [algorithm, currentComparisons, currentSwaps, arraySize, currentStep]);
+
+  const complexityLabel = useMemo(() => {
+    if (algorithm === "Bubble Sort") return "O(n²) - Quadratic";
+    if (algorithm === "Merge Sort") return "O(n log n) - Linearithmic";
+    if (algorithm === "Quick Sort") return "O(n log n) avg - Linearithmic";
+    return "";
+  }, [algorithm]);
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium">Complexity Analysis</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <ResponsiveContainer width="100%" height={250}>
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis 
+              dataKey="step" 
+              label={{ value: 'Step', position: 'insideBottom', offset: -5 }}
+              className="text-xs"
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <YAxis 
+              label={{ value: 'Operations', angle: -90, position: 'insideLeft' }}
+              className="text-xs"
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: 'hsl(var(--popover))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem'
+              }}
+              labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
+            />
+            <Legend 
+              wrapperStyle={{ fontSize: '0.75rem' }}
+              iconType="line"
+            />
+            <Area
+              type="monotone"
+              dataKey="actual"
+              stroke="hsl(var(--primary))"
+              fill="url(#actualGradient)"
+              strokeWidth={2}
+              name="Actual Operations"
+            />
+            <Line
+              type="monotone"
+              dataKey="theoretical"
+              stroke="hsl(var(--destructive))"
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={false}
+              name="Theoretical Worst"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+
+        <div className="space-y-2 pt-2 border-t">
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-muted-foreground">Efficiency:</span>
+            <span className="font-bold text-lg">{efficiency}%</span>
+          </div>
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-muted-foreground">Complexity:</span>
+            <span className="font-mono text-xs font-medium">{complexityLabel}</span>
+          </div>
+          <div className="text-xs text-muted-foreground pt-2">
+            {algorithm === "Bubble Sort" && "Compares each element with others repeatedly"}
+            {algorithm === "Merge Sort" && "Divides array recursively, then merges sorted halves"}
+            {algorithm === "Quick Sort" && "Partitions around pivot, recursively sorts sub-arrays"}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

@@ -337,7 +337,10 @@ export default function Visualizer() {
             {steps.length > 0 && !comparisonMode && (
               <InfoPanel 
                 algorithm={algorithm} 
-                step={steps[currentStepIndex]} 
+                step={steps[currentStepIndex]}
+                currentStepIndex={currentStepIndex}
+                totalSteps={steps.length}
+                arraySize={initialArray.length}
               />
             )}
           </div>
