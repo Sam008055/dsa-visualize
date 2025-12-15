@@ -17,7 +17,15 @@ type DSType = "Stack Operations" | "Queue Operations";
 
 export default function DataStructures() {
   const [activeTab, setActiveTab] = useState<DSType>("Stack Operations");
-  const [steps, setSteps] = useState<SortingStep[]>([]);
+  const [steps, setSteps] = useState<SortingStep[]>([{
+    array: [],
+    comparing: [],
+    swapping: [],
+    sorted: [],
+    explanation: "Initializing...",
+    comparisons: 0,
+    swaps: 0
+  }]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);

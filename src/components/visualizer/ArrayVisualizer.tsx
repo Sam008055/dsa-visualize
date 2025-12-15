@@ -22,6 +22,7 @@ interface Particle {
 }
 
 export function ArrayVisualizer({ step, maxValue, algorithm }: ArrayVisualizerProps) {
+  if (!step) return null;
   const { array, comparing, swapping, sorted } = step;
   const [containerWidth, setContainerWidth] = useState(800);
   const [particles, setParticles] = useState<Particle[]>([]);
