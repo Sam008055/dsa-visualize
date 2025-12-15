@@ -97,9 +97,9 @@ export function ComplexityGraph({
         <CardTitle className="text-lg font-bold">Complexity Analysis</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="w-full h-[200px] sm:h-[250px] md:h-[280px]">
+        <div className="w-full h-[220px] sm:h-[270px] md:h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data}>
+            <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
               <defs>
                 <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -109,17 +109,16 @@ export function ComplexityGraph({
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" opacity={0.3} />
               <XAxis 
                 dataKey="step" 
-                label={{ value: 'Step', position: 'insideBottom', offset: -5, className: 'text-[10px] sm:text-xs' }}
-                className="text-[10px] sm:text-xs"
+                label={{ value: 'Step', position: 'insideBottom', offset: -10, style: { fontSize: '11px', fill: 'hsl(var(--muted-foreground))' } }}
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
-                tickMargin={5}
+                tickMargin={8}
+                height={50}
               />
               <YAxis 
-                label={{ value: 'Operations', angle: -90, position: 'insideLeft', className: 'text-[10px] sm:text-xs' }}
-                className="text-[10px] sm:text-xs"
+                label={{ value: 'Operations', angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: 'hsl(var(--muted-foreground))' } }}
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
-                tickMargin={5}
-                width={40}
+                tickMargin={8}
+                width={50}
               />
               <Tooltip 
                 contentStyle={{ 
@@ -132,12 +131,13 @@ export function ComplexityGraph({
                 labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
               />
               <Legend 
-                wrapperStyle={{ fontSize: '0.65rem' }}
+                wrapperStyle={{ fontSize: '0.7rem', paddingTop: '10px' }}
                 iconType="line"
-                iconSize={10}
+                iconSize={12}
                 layout="horizontal"
                 align="center"
                 verticalAlign="bottom"
+                height={36}
               />
               <Area
                 type="monotone"
