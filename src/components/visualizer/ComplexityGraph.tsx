@@ -97,7 +97,7 @@ export function ComplexityGraph({
         <CardTitle className="text-lg font-bold">Complexity Analysis</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="w-full h-[250px]">
+        <div className="w-full h-[200px] sm:h-[250px] md:h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
               <defs>
@@ -109,14 +109,17 @@ export function ComplexityGraph({
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" opacity={0.3} />
               <XAxis 
                 dataKey="step" 
-                label={{ value: 'Step', position: 'insideBottom', offset: -5 }}
-                className="text-xs"
-                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                label={{ value: 'Step', position: 'insideBottom', offset: -5, className: 'text-[10px] sm:text-xs' }}
+                className="text-[10px] sm:text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
+                tickMargin={5}
               />
               <YAxis 
-                label={{ value: 'Operations', angle: -90, position: 'insideLeft' }}
-                className="text-xs"
-                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                label={{ value: 'Operations', angle: -90, position: 'insideLeft', className: 'text-[10px] sm:text-xs' }}
+                className="text-[10px] sm:text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
+                tickMargin={5}
+                width={40}
               />
               <Tooltip 
                 contentStyle={{ 
@@ -129,8 +132,12 @@ export function ComplexityGraph({
                 labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
               />
               <Legend 
-                wrapperStyle={{ fontSize: '0.75rem' }}
+                wrapperStyle={{ fontSize: '0.65rem' }}
                 iconType="line"
+                iconSize={10}
+                layout="horizontal"
+                align="center"
+                verticalAlign="bottom"
               />
               <Area
                 type="monotone"
@@ -153,9 +160,9 @@ export function ComplexityGraph({
           </ResponsiveContainer>
         </div>
 
-        <div className="space-y-3 pt-3 border-t">
+        <div className="space-y-3 pt-4 border-t">
           <motion.div 
-            className="flex justify-between items-center"
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
@@ -171,12 +178,12 @@ export function ComplexityGraph({
             </motion.span>
           </motion.div>
           
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <span className="text-sm text-muted-foreground">Complexity:</span>
-            <span className="font-mono text-xs font-medium">{complexityLabel}</span>
+            <span className="font-mono text-xs font-medium break-all">{complexityLabel}</span>
           </div>
           
-          <div className="text-xs text-muted-foreground pt-1 leading-relaxed">
+          <div className="text-xs text-muted-foreground pt-2 leading-relaxed">
             {algorithm === "Bubble Sort" && "Compares each element with others repeatedly"}
             {algorithm === "Merge Sort" && "Divides array recursively, then merges sorted halves"}
             {algorithm === "Quick Sort" && "Partitions around pivot, recursively sorts sub-arrays"}
