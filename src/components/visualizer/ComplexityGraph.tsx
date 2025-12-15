@@ -93,8 +93,8 @@ export function ComplexityGraph({
 
   return (
     <Card className="glass-card shadow-level-2 border-2 border-white/10 backdrop-blur-xl">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">Complexity Analysis</CardTitle>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-bold">Complexity Analysis</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="w-full h-[250px]">
@@ -153,13 +153,13 @@ export function ComplexityGraph({
           </ResponsiveContainer>
         </div>
 
-        <div className="space-y-2 pt-2 border-t">
+        <div className="space-y-3 pt-3 border-t">
           <motion.div 
-            className="flex justify-between items-center text-sm"
+            className="flex justify-between items-center"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <span className="text-muted-foreground">Efficiency:</span>
+            <span className="text-sm text-muted-foreground">Efficiency:</span>
             <motion.span 
               className="font-bold text-lg"
               key={efficiency}
@@ -170,11 +170,13 @@ export function ComplexityGraph({
               {efficiency}%
             </motion.span>
           </motion.div>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-muted-foreground">Complexity:</span>
+          
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-muted-foreground">Complexity:</span>
             <span className="font-mono text-xs font-medium">{complexityLabel}</span>
           </div>
-          <div className="text-xs text-muted-foreground pt-2">
+          
+          <div className="text-xs text-muted-foreground pt-1 leading-relaxed">
             {algorithm === "Bubble Sort" && "Compares each element with others repeatedly"}
             {algorithm === "Merge Sort" && "Divides array recursively, then merges sorted halves"}
             {algorithm === "Quick Sort" && "Partitions around pivot, recursively sorts sub-arrays"}
