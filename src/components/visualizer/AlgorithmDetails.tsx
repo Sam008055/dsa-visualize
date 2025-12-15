@@ -3,11 +3,64 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { CheckCircle2, XCircle, Info, Code2, Lightbulb, TrendingUp } from "lucide-react";
+import { CheckCircle2, XCircle, Info, Code2, Lightbulb, TrendingUp, Copy, Check } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface AlgorithmDetailsProps {
   algorithm: AlgorithmType;
+}
+
+function CodeEditor({ code, language }: { code: string; language: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="rounded-lg overflow-hidden border border-white/10 bg-[#1e1e1e] shadow-inner">
+      <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-white/5">
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+            <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+            <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+          </div>
+          <span className="ml-2 text-xs text-muted-foreground font-mono">{language}</span>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 text-muted-foreground hover:text-white"
+          onClick={handleCopy}
+        >
+          {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+        </Button>
+      </div>
+      <ScrollArea className="h-[300px] w-full">
+        <div className="p-4 font-mono text-xs leading-relaxed">
+          <table className="w-full border-collapse">
+            <tbody>
+              {code.split('\n').map((line, i) => (
+                <tr key={i}>
+                  <td className="select-none text-right pr-4 text-muted-foreground/40 w-8 border-r border-white/5">
+                    {i + 1}
+                  </td>
+                  <td className="pl-4 text-[#d4d4d4] whitespace-pre">
+                    {line}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </ScrollArea>
+    </div>
+  );
 }
 
 export function AlgorithmDetails({ algorithm }: AlgorithmDetailsProps) {
@@ -172,32 +225,16 @@ export function AlgorithmDetails({ algorithm }: AlgorithmDetailsProps) {
               <TabsTrigger value="c">C</TabsTrigger>
             </TabsList>
             <TabsContent value="python">
-              <ScrollArea className="h-[300px] w-full rounded-lg border bg-muted/30 p-4">
-                <pre className="text-xs font-mono">
-                  <code>{info.codeImplementations.python}</code>
-                </pre>
-              </ScrollArea>
+              <CodeEditor code={info.codeImplementations.python} language="main.py" />
             </TabsContent>
             <TabsContent value="java">
-              <ScrollArea className="h-[300px] w-full rounded-lg border bg-muted/30 p-4">
-                <pre className="text-xs font-mono">
-                  <code>{info.codeImplementations.java}</code>
-                </pre>
-              </ScrollArea>
+              <CodeEditor code={info.codeImplementations.java} language="Sort.java" />
             </TabsContent>
             <TabsContent value="cpp">
-              <ScrollArea className="h-[300px] w-full rounded-lg border bg-muted/30 p-4">
-                <pre className="text-xs font-mono">
-                  <code>{info.codeImplementations.cpp}</code>
-                </pre>
-              </ScrollArea>
+              <CodeEditor code={info.codeImplementations.cpp} language="sort.cpp" />
             </TabsContent>
             <TabsContent value="c">
-              <ScrollArea className="h-[300px] w-full rounded-lg border bg-muted/30 p-4">
-                <pre className="text-xs font-mono">
-                  <code>{info.codeImplementations.c}</code>
-                </pre>
-              </ScrollArea>
+              <CodeEditor code={info.codeImplementations.c} language="sort.c" />
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -46,7 +46,7 @@ export function InfoPanel({ algorithm, step, currentStepIndex, totalSteps, array
           <Card className="glass-card shadow-level-2 border-2 border-white/10 backdrop-blur-xl">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl font-bold tracking-tight gradient-primary bg-clip-text text-transparent">
+                <CardTitle className="text-2xl font-bold tracking-tight text-primary">
                   {info.name}
                 </CardTitle>
                 <motion.div
