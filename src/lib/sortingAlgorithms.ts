@@ -6,6 +6,8 @@ import { insertionSort, insertionSortInfo } from "./algorithms/insertionSort";
 import { selectionSort, selectionSortInfo } from "./algorithms/selectionSort";
 import { stackOperations, stackInfo } from "./algorithms/stack";
 import { queueOperations, queueInfo } from "./algorithms/queue";
+import { treeInfo } from "./algorithms/tree";
+import { graphInfo } from "./algorithms/graph";
 
 export type { AlgorithmType, SortingStep, AlgorithmInfo };
 
@@ -17,6 +19,8 @@ export const ALGORITHMS: Record<AlgorithmType, AlgorithmInfo> = {
   "Selection Sort": selectionSortInfo,
   "Stack Operations": stackInfo,
   "Queue Operations": queueInfo,
+  "Tree Operations": treeInfo,
+  "Graph Operations": graphInfo,
 };
 
 export function generateSteps(algorithm: AlgorithmType, initialArray: number[]): SortingStep[] {
@@ -57,10 +61,14 @@ export function generateSteps(algorithm: AlgorithmType, initialArray: number[]):
     case "Queue Operations":
       queueOperations(array, steps, counters);
       break;
+    case "Tree Operations":
+    case "Graph Operations":
+      // These are handled interactively, return empty steps or initial state
+      break;
   }
 
   // Final sorted state (only for sorting algorithms)
-  if (algorithm !== "Stack Operations" && algorithm !== "Queue Operations") {
+  if (algorithm !== "Stack Operations" && algorithm !== "Queue Operations" && algorithm !== "Tree Operations" && algorithm !== "Graph Operations") {
     steps.push({
       array: [...array],
       comparing: [],

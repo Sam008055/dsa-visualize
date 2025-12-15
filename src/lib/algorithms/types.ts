@@ -5,7 +5,37 @@ export type AlgorithmType =
   | "Insertion Sort" 
   | "Selection Sort" 
   | "Stack Operations" 
-  | "Queue Operations";
+  | "Queue Operations"
+  | "Tree Operations"
+  | "Graph Operations";
+
+export interface TreeNode {
+  id: string;
+  value: number;
+  left: TreeNode | null;
+  right: TreeNode | null;
+  x: number;
+  y: number;
+}
+
+export interface GraphNode {
+  id: string;
+  value: number;
+  x: number;
+  y: number;
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  weight?: number;
+}
+
+export interface GraphData {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  isDirected: boolean;
+}
 
 export interface SortingStep {
   array: number[];
@@ -17,6 +47,11 @@ export interface SortingStep {
   swaps: number;
   // Optional fields for Stack/Queue visualization
   highlight?: number[]; // Generic highlight
+  // New fields for Tree/Graph
+  tree?: TreeNode | null;
+  graph?: GraphData | null;
+  visited?: string[]; // IDs of visited nodes
+  current?: string; // ID of current node being processed
 }
 
 export interface AlgorithmInfo {

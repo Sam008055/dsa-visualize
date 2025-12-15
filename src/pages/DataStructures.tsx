@@ -11,9 +11,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SortingStep } from "@/lib/sortingAlgorithms";
 import { soundManager } from "@/lib/soundManager";
 import { toast } from "sonner";
-import { Play, RotateCcw, Plus, Minus } from "lucide-react";
+import { Play, RotateCcw, Plus, Minus, Network, GitGraph } from "lucide-react";
+import { TreeVisualizer } from "@/components/visualizer/TreeVisualizer";
+import { GraphVisualizer } from "@/components/visualizer/GraphVisualizer";
+import { insertNode } from "@/lib/algorithms/tree";
+import { bfs, dfs } from "@/lib/algorithms/graph";
+import { TreeNode, GraphData, GraphNode } from "@/lib/algorithms/types";
 
-type DSType = "Stack Operations" | "Queue Operations";
+type DSType = "Stack Operations" | "Queue Operations" | "Tree Operations" | "Graph Operations";
 
 export default function DataStructures() {
   const [activeTab, setActiveTab] = useState<DSType>("Stack Operations");
@@ -33,6 +38,13 @@ export default function DataStructures() {
   const [inputValue, setInputValue] = useState("");
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  // Tree State
+  const [treeRoot, setTreeRoot] = useState<TreeNode | null>(null);
+  
+  // Graph State
+  const [graphData, setGraphData] = useState<GraphData>({ nodes: [], edges: [], isDirected: false });
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize
@@ -43,14 +55,18 @@ export default function DataStructures() {
   const resetDS = () => {
     setIsPlaying(false);
     setCurrentStepIndex(0);
+    setTreeRoot(null);
+    setGraphData({ nodes: [], edges: [], isDirected: false });
     setSteps([{
       array: [],
       comparing: [],
       swapping: [],
       sorted: [],
-      explanation: `${activeTab === "Stack Operations" ? "Stack" : "Queue"} is empty`,
+      explanation: `Ready to visualize ${activeTab}`,
       comparisons: 0,
-      swaps: 0
+      swaps: 0,
+      tree: null,
+      graph: { nodes: [], edges: [], isDirected: false }
     }]);
   };
 
@@ -84,6 +100,102 @@ export default function DataStructures() {
   useEffect(() => {
     soundManager.setEnabled(soundEnabled);
   }, [soundEnabled]);
+
+  // Tree Operations
+  const handleTreeInsert = () => {
+    const val = parseInt(inputValue);
+    if (isNaN(val)) {
+      toast.error("Please enter a valid number");
+      return;
+    }
+
+    // Use the tree from the last step or current state
+    const currentRoot = steps[steps.length - 1]?.tree || treeRoot;
+    const newSteps: SortingStep[] = [];
+    
+    // We need to pass a mutable array to capture steps
+    const newRoot = insertNode(currentRoot, val, newSteps);
+    
+    setTreeRoot(newRoot);
+    setSteps(newSteps);
+    setCurrentStepIndex(0);
+    setIsPlaying(true);
+    setInputValue("");
+  };
+
+  // Graph Operations
+  const handleAddGraphNode = () => {
+    const val = parseInt(inputValue);
+    if (isNaN(val)) {
+      toast.error("Please enter a valid number");
+      return;
+    }
+
+    const newNode: GraphNode = {
+      id: Math.random().toString(36).substr(2, 9),
+      value: val,
+      x: 100 + Math.random() * 600,
+      y: 50 + Math.random() * 300
+    };
+
+    const newGraph = {
+      ...graphData,
+      nodes: [...graphData.nodes, newNode]
+    };
+
+    setGraphData(newGraph);
+    setSteps([{
+      ...steps[0],
+      graph: newGraph,
+      explanation: `Added node ${val}`
+    }]);
+    setInputValue("");
+  };
+
+  const handleAddGraphEdge = () => {
+    if (graphData.nodes.length < 2) {
+      toast.error("Need at least 2 nodes to create an edge");
+      return;
+    }
+    // Randomly connect two unconnected nodes for simplicity in this demo
+    // In a real app, we'd select nodes
+    const source = graphData.nodes[Math.floor(Math.random() * graphData.nodes.length)];
+    const target = graphData.nodes[Math.floor(Math.random() * graphData.nodes.length)];
+    
+    if (source.id === target.id) return;
+
+    const newGraph = {
+      ...graphData,
+      edges: [...graphData.edges, { source: source.id, target: target.id }]
+    };
+
+    setGraphData(newGraph);
+    setSteps([{
+      ...steps[0],
+      graph: newGraph,
+      explanation: `Added edge between ${source.value} and ${target.value}`
+    }]);
+  };
+
+  const handleGraphBFS = () => {
+    if (graphData.nodes.length === 0) return;
+    const startNode = graphData.nodes[0];
+    const newSteps: SortingStep[] = [];
+    bfs(graphData, startNode.id, newSteps);
+    setSteps(newSteps);
+    setCurrentStepIndex(0);
+    setIsPlaying(true);
+  };
+
+  const handleGraphDFS = () => {
+    if (graphData.nodes.length === 0) return;
+    const startNode = graphData.nodes[0];
+    const newSteps: SortingStep[] = [];
+    dfs(graphData, startNode.id, newSteps);
+    setSteps(newSteps);
+    setCurrentStepIndex(0);
+    setIsPlaying(true);
+  };
 
   const handlePush = () => {
     const val = parseInt(inputValue);
@@ -242,14 +354,16 @@ export default function DataStructures() {
                 Data Structures
               </h1>
               <p className="text-muted-foreground mt-1">
-                Interactive visualization of Stack (LIFO) and Queue (FIFO) operations.
+                Interactive visualization of Stacks, Queues, Trees, and Graphs.
               </p>
             </div>
 
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DSType)} className="w-[300px]">
-              <TabsList className="grid w-full grid-cols-2">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DSType)} className="w-full md:w-auto">
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
                 <TabsTrigger value="Stack Operations">Stack</TabsTrigger>
                 <TabsTrigger value="Queue Operations">Queue</TabsTrigger>
+                <TabsTrigger value="Tree Operations">Tree</TabsTrigger>
+                <TabsTrigger value="Graph Operations">Graph</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -267,11 +381,24 @@ export default function DataStructures() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 min-h-[450px] flex items-center justify-center bg-black/5">
-                  <ArrayVisualizer 
-                    step={steps[currentStepIndex]} 
-                    maxValue={100} 
-                    algorithm={activeTab}
-                  />
+                  {activeTab === "Stack Operations" || activeTab === "Queue Operations" ? (
+                    <ArrayVisualizer 
+                      step={steps[currentStepIndex]} 
+                      maxValue={100} 
+                      algorithm={activeTab}
+                    />
+                  ) : activeTab === "Tree Operations" ? (
+                    <TreeVisualizer 
+                      root={steps[currentStepIndex]?.tree || treeRoot}
+                      currentNodeId={steps[currentStepIndex]?.current}
+                    />
+                  ) : (
+                    <GraphVisualizer 
+                      data={steps[currentStepIndex]?.graph || graphData}
+                      currentNodeId={steps[currentStepIndex]?.current}
+                      visitedIds={steps[currentStepIndex]?.visited}
+                    />
+                  )}
                 </CardContent>
               </Card>
 
@@ -307,22 +434,55 @@ export default function DataStructures() {
                 <CardContent className="space-y-4">
                   <div className="flex gap-2">
                     <Input 
-                      placeholder="Value (0-99)" 
+                      placeholder="Value" 
                       type="number" 
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handlePush()}
+                      onKeyDown={(e) => e.key === "Enter" && (
+                        activeTab === "Tree Operations" ? handleTreeInsert() :
+                        activeTab === "Graph Operations" ? handleAddGraphNode() :
+                        handlePush()
+                      )}
                     />
-                    <Button onClick={handlePush} className="gradient-primary text-white">
+                    <Button 
+                      onClick={() => {
+                        if (activeTab === "Tree Operations") handleTreeInsert();
+                        else if (activeTab === "Graph Operations") handleAddGraphNode();
+                        else handlePush();
+                      }} 
+                      className="gradient-primary text-white"
+                    >
                       <Plus className="w-4 h-4 mr-1" />
-                      {activeTab === "Stack Operations" ? "Push" : "Enqueue"}
+                      Add
                     </Button>
                   </div>
                   
-                  <Button onClick={handlePop} variant="destructive" className="w-full">
-                    <Minus className="w-4 h-4 mr-1" />
-                    {activeTab === "Stack Operations" ? "Pop" : "Dequeue"}
-                  </Button>
+                  {activeTab === "Stack Operations" && (
+                    <Button onClick={handlePop} variant="destructive" className="w-full">
+                      <Minus className="w-4 h-4 mr-1" />
+                      Pop
+                    </Button>
+                  )}
+
+                  {activeTab === "Queue Operations" && (
+                    <Button onClick={handlePop} variant="destructive" className="w-full">
+                      <Minus className="w-4 h-4 mr-1" />
+                      Dequeue
+                    </Button>
+                  )}
+
+                  {activeTab === "Graph Operations" && (
+                    <div className="space-y-2">
+                      <Button onClick={handleAddGraphEdge} variant="outline" className="w-full">
+                        <Network className="w-4 h-4 mr-2" />
+                        Add Random Edge
+                      </Button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button onClick={handleGraphBFS} variant="secondary">BFS</Button>
+                        <Button onClick={handleGraphDFS} variant="secondary">DFS</Button>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="relative my-4">
                     <div className="absolute inset-0 flex items-center">
@@ -333,10 +493,12 @@ export default function DataStructures() {
                     </div>
                   </div>
 
-                  <Button onClick={runDemo} variant="outline" className="w-full border-primary/50 hover:bg-primary/10">
-                    <Play className="w-4 h-4 mr-2" />
-                    Run Automated Demo
-                  </Button>
+                  {(activeTab === "Stack Operations" || activeTab === "Queue Operations") && (
+                    <Button onClick={runDemo} variant="outline" className="w-full border-primary/50 hover:bg-primary/10">
+                      <Play className="w-4 h-4 mr-2" />
+                      Run Automated Demo
+                    </Button>
+                  )}
                   
                   <Button onClick={resetDS} variant="ghost" className="w-full">
                     <RotateCcw className="w-4 h-4 mr-2" />
@@ -350,14 +512,30 @@ export default function DataStructures() {
                   <CardTitle>Info</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground space-y-2">
-                  <p>
-                    <strong>{activeTab === "Stack Operations" ? "LIFO (Last-In, First-Out)" : "FIFO (First-In, First-Out)"}</strong>
-                  </p>
-                  <p>
-                    {activeTab === "Stack Operations" 
-                      ? "Elements are added to the top and removed from the top. Think of a stack of plates."
-                      : "Elements are added to the rear and removed from the front. Think of a line of people."}
-                  </p>
+                  {activeTab === "Tree Operations" && (
+                    <>
+                      <p><strong>Binary Search Tree (BST)</strong></p>
+                      <p>Nodes are arranged such that left child &lt; parent &lt; right child.</p>
+                    </>
+                  )}
+                  {activeTab === "Graph Operations" && (
+                    <>
+                      <p><strong>Graph Traversal</strong></p>
+                      <p>BFS explores neighbors level by level. DFS explores as deep as possible along each branch.</p>
+                    </>
+                  )}
+                  {activeTab === "Stack Operations" && (
+                    <>
+                      <p><strong>LIFO (Last-In, First-Out)</strong></p>
+                      <p>Elements are added to the top and removed from the top.</p>
+                    </>
+                  )}
+                  {activeTab === "Queue Operations" && (
+                    <>
+                      <p><strong>FIFO (First-In, First-Out)</strong></p>
+                      <p>Elements are added to the rear and removed from the front.</p>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
