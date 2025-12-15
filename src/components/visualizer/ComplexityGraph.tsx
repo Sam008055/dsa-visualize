@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { AlgorithmType } from "@/lib/sortingAlgorithms";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 interface ComplexityGraphProps {
   algorithm: AlgorithmType;
@@ -23,7 +24,7 @@ export function ComplexityGraph({
   const data = useMemo(() => {
     const points = [];
     const n = arraySize;
-    const stepInterval = Math.max(1, Math.floor(totalSteps / 50)); // Sample up to 50 points
+    const stepInterval = Math.max(1, Math.floor(totalSteps / 50));
     
     for (let step = 0; step <= currentStep; step += stepInterval) {
       const progress = step / Math.max(totalSteps - 1, 1);
@@ -31,15 +32,11 @@ export function ComplexityGraph({
       
       let theoreticalOps = 0;
       
-      // Calculate theoretical operations based on algorithm
       if (algorithm === "Bubble Sort") {
-        // O(n²) - worst case: n*(n-1)/2 comparisons
         theoreticalOps = Math.floor((n * (n - 1) / 2) * progress);
       } else if (algorithm === "Merge Sort") {
-        // O(n log n)
         theoreticalOps = Math.floor(n * Math.log2(n) * progress * 1.5);
       } else if (algorithm === "Quick Sort") {
-        // O(n log n) average case
         theoreticalOps = Math.floor(n * Math.log2(n) * progress * 1.8);
       }
       
@@ -50,7 +47,6 @@ export function ComplexityGraph({
       });
     }
     
-    // Always include the current step
     if (currentStep > 0 && currentStep % stepInterval !== 0) {
       points.push({
         step: currentStep,
@@ -96,7 +92,7 @@ export function ComplexityGraph({
   }, [algorithm]);
 
   return (
-    <Card>
+    <Card className="glass-card shadow-level-2 border-2 border-white/10 backdrop-blur-xl">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">Complexity Analysis</CardTitle>
       </CardHeader>
@@ -126,7 +122,8 @@ export function ComplexityGraph({
                 backgroundColor: 'hsl(var(--popover))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '0.5rem',
-                fontSize: '0.875rem'
+                fontSize: '0.875rem',
+                backdropFilter: 'blur(10px)'
               }}
               labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
             />
@@ -155,10 +152,22 @@ export function ComplexityGraph({
         </ResponsiveContainer>
 
         <div className="space-y-2 pt-2 border-t">
-          <div className="flex justify-between items-center text-sm">
+          <motion.div 
+            className="flex justify-between items-center text-sm"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
             <span className="text-muted-foreground">Efficiency:</span>
-            <span className="font-bold text-lg">{efficiency}%</span>
-          </div>
+            <motion.span 
+              className="font-bold text-lg"
+              key={efficiency}
+              initial={{ scale: 1.2, color: "hsl(var(--primary))" }}
+              animate={{ scale: 1, color: "inherit" }}
+              transition={{ duration: 0.3 }}
+            >
+              {efficiency}%
+            </motion.span>
+          </motion.div>
           <div className="flex justify-between items-center text-sm">
             <span className="text-muted-foreground">Complexity:</span>
             <span className="font-mono text-xs font-medium">{complexityLabel}</span>

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 
 interface TimelineScrubberProps {
@@ -62,7 +62,6 @@ export function TimelineScrubber({
     return () => window.removeEventListener("mouseup", handleGlobalMouseUp);
   }, []);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft" && currentStep > 0) {
@@ -82,65 +81,68 @@ export function TimelineScrubber({
   const hoverPercentage = hoveredStep !== null ? (hoveredStep / (totalSteps - 1)) * 100 : 0;
 
   return (
-    <div className="w-full space-y-2 mt-4">
-      {/* Step counter */}
+    <motion.div 
+      className="w-full space-y-2 mt-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       <div className="flex justify-between text-xs text-muted-foreground px-1">
         <span>Step {currentStep + 1}</span>
         <span>Total: {totalSteps}</span>
       </div>
 
-      {/* Timeline bar */}
       <div
         ref={barRef}
-        className="relative h-10 bg-muted rounded-lg cursor-pointer group border"
+        className="relative h-10 glass-card rounded-lg cursor-pointer group border-2 border-white/10 backdrop-blur-xl overflow-hidden"
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-muted via-muted/80 to-muted" />
+        <div className="absolute inset-0 bg-gradient-to-r from-muted/50 via-muted/30 to-muted/50" />
 
-        {/* Hover indicator */}
-        {hoveredStep !== null && !isDragging && (
-          <motion.div
-            className="absolute top-0 bottom-0 w-1 bg-accent/50"
-            style={{ left: `${hoverPercentage}%` }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.1 }}
-          />
-        )}
+        <AnimatePresence>
+          {hoveredStep !== null && !isDragging && (
+            <motion.div
+              className="absolute top-0 bottom-0 w-1 bg-accent/50 shadow-lg"
+              style={{ left: `${hoverPercentage}%` }}
+              initial={{ opacity: 0, scaleY: 0.8 }}
+              animate={{ opacity: 1, scaleY: 1 }}
+              exit={{ opacity: 0, scaleY: 0.8 }}
+              transition={{ duration: 0.15 }}
+            />
+          )}
+        </AnimatePresence>
 
-        {/* Progress bar */}
         <motion.div
-          className="absolute top-0 bottom-0 left-0 bg-primary/30 border-r-2 border-primary"
+          className="absolute top-0 bottom-0 left-0 gradient-primary opacity-30 border-r-2 border-primary"
           style={{ width: `${progressPercentage}%` }}
-          transition={{ duration: isPlaying ? 0.2 : 0 }}
+          transition={{ duration: isPlaying ? 0.2 : 0.3, ease: "easeOut" }}
         />
 
-        {/* Current position indicator */}
         <motion.div
-          className="absolute top-0 bottom-0 w-1 bg-primary shadow-lg"
+          className="absolute top-0 bottom-0 w-1 gradient-primary shadow-lg glow-primary"
           style={{ left: `${progressPercentage}%` }}
-          transition={{ duration: isPlaying ? 0.2 : 0 }}
+          transition={{ duration: isPlaying ? 0.2 : 0.3, ease: "easeOut" }}
         />
 
-        {/* Hover tooltip */}
-        {hoveredStep !== null && (
-          <motion.div
-            className="absolute -top-8 bg-popover text-popover-foreground px-2 py-1 rounded text-xs font-medium border shadow-md pointer-events-none"
-            style={{ left: `${hoverPercentage}%`, transform: "translateX(-50%)" }}
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15 }}
-          >
-            Step {hoveredStep + 1}
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {hoveredStep !== null && (
+            <motion.div
+              className="absolute -top-10 glass-card backdrop-blur-xl text-foreground px-3 py-1.5 rounded-lg text-xs font-medium border-2 border-primary/20 shadow-level-3 pointer-events-none"
+              style={{ left: `${hoverPercentage}%`, transform: "translateX(-50%)" }}
+              initial={{ opacity: 0, y: 5, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 5, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+            >
+              Step {hoveredStep + 1}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Step markers (for smaller datasets) */}
         {totalSteps <= 50 && (
           <div className="absolute inset-0 flex items-center">
             {Array.from({ length: totalSteps }).map((_, i) => (
@@ -153,10 +155,14 @@ export function TimelineScrubber({
         )}
       </div>
 
-      {/* Instructions */}
-      <div className="text-xs text-muted-foreground text-center">
+      <motion.div 
+        className="text-xs text-muted-foreground text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
         Click or drag to jump to any step • Use ← → arrow keys to navigate
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

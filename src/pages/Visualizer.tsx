@@ -108,12 +108,13 @@ export default function Visualizer() {
     };
   }, [isPlaying, speed, steps.length]);
 
-  // Toggle Dark Mode
+  // Toggle Dark Mode with smooth transition
   useEffect(() => {
+    const root = document.documentElement;
     if (isDarkMode) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
     }
   }, [isDarkMode]);
 
@@ -179,50 +180,59 @@ export default function Visualizer() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-500">
       {/* Premium Navbar with Gradient */}
       <motion.nav 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="border-b bg-gradient-to-r from-[#06B6D4] to-[#14B8A6] backdrop-blur-sm sticky top-0 z-50 shadow-level-3"
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="border-b bg-gradient-to-r from-[#06B6D4] via-[#0EA5E9] to-[#14B8A6] backdrop-blur-sm sticky top-0 z-50 shadow-level-3"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <motion.div 
-            className="flex items-center gap-3"
-            whileHover={{ scale: 1.02 }}
+            className="flex items-center gap-3 cursor-pointer"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm shadow-lg">
               <BarChart3 className="h-6 w-6 text-white" />
             </div>
-            <span className="font-bold text-xl tracking-tight text-white">DSA Visualizer</span>
+            <span className="font-bold text-xl tracking-tight text-white drop-shadow-md">DSA Visualizer</span>
           </motion.div>
           
           <div className="flex items-center gap-3">
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <motion.div 
+              whileHover={{ scale: 1.1, rotate: 5 }} 
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10"
+                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
                 aria-label="Share"
               >
                 <Share2 className="h-5 w-5" />
               </Button>
             </motion.div>
             
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <motion.div 
+              whileHover={{ scale: 1.1 }} 
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10"
+                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
                 aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
                 <motion.div
                   initial={false}
-                  animate={{ rotate: isDarkMode ? 0 : 180 }}
-                  transition={{ duration: 0.3 }}
+                  animate={{ rotate: isDarkMode ? 0 : 180, scale: isDarkMode ? 1 : 1.1 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
                 >
                   {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                 </motion.div>
@@ -233,8 +243,8 @@ export default function Visualizer() {
       </motion.nav>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           
           {/* Left Column: Controls & Visualizer */}
           <div className="lg:col-span-2 space-y-6">
@@ -243,17 +253,21 @@ export default function Visualizer() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="glass-card p-6 rounded-2xl shadow-level-2"
+              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+              className="glass-card p-4 md:p-6 rounded-2xl shadow-level-2 border-2 border-white/10"
             >
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                <div className="flex items-center gap-4 w-full sm:w-auto flex-wrap">
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto flex-wrap">
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }} 
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
                     <Button
                       variant={comparisonMode ? "default" : "outline"}
                       size="sm"
                       onClick={() => setComparisonMode(!comparisonMode)}
-                      className={comparisonMode ? "gradient-primary text-white border-0 shadow-level-2" : ""}
+                      className={`transition-all duration-300 ${comparisonMode ? "gradient-primary text-white border-0 shadow-level-2 glow-primary" : "hover:gradient-primary hover:text-white hover:border-0"}`}
                     >
                       {comparisonMode ? "Single View" : "Compare Algorithms"}
                     </Button>
@@ -261,59 +275,70 @@ export default function Visualizer() {
                   
                   {comparisonMode ? (
                     <>
+                      <div className="relative">
+                        <Select 
+                          value={algorithm} 
+                          onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
+                        >
+                          <SelectTrigger className="w-[140px] h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-xl transition-all duration-300 hover:shadow-level-2">
+                            <SelectValue placeholder="Algorithm A" />
+                          </SelectTrigger>
+                          <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
+                            <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200">Bubble Sort</SelectItem>
+                            <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200">Merge Sort</SelectItem>
+                            <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200">Quick Sort</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <span className="text-muted-foreground text-sm font-medium">vs</span>
+                      <div className="relative">
+                        <Select 
+                          value={algorithmB} 
+                          onValueChange={(v) => setAlgorithmB(v as AlgorithmType)}
+                        >
+                          <SelectTrigger className="w-[140px] h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-xl transition-all duration-300 hover:shadow-level-2">
+                            <SelectValue placeholder="Algorithm B" />
+                          </SelectTrigger>
+                          <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
+                            <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200">Bubble Sort</SelectItem>
+                            <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200">Merge Sort</SelectItem>
+                            <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200">Quick Sort</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="relative">
                       <Select 
                         value={algorithm} 
                         onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
                       >
-                        <SelectTrigger className="w-[140px] h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                          <SelectValue placeholder="Algorithm A" />
+                        <SelectTrigger className="w-[180px] md:w-[200px] h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-xl transition-all duration-300 hover:shadow-level-2">
+                          <SelectValue placeholder="Select Algorithm" />
                         </SelectTrigger>
-                        <SelectContent className="glass-card">
-                          <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
-                          <SelectItem value="Merge Sort">Merge Sort</SelectItem>
-                          <SelectItem value="Quick Sort">Quick Sort</SelectItem>
+                        <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
+                          <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Bubble Sort</SelectItem>
+                          <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Merge Sort</SelectItem>
+                          <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Quick Sort</SelectItem>
                         </SelectContent>
                       </Select>
-                      <span className="text-muted-foreground text-sm font-medium">vs</span>
-                      <Select 
-                        value={algorithmB} 
-                        onValueChange={(v) => setAlgorithmB(v as AlgorithmType)}
-                      >
-                        <SelectTrigger className="w-[140px] h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                          <SelectValue placeholder="Algorithm B" />
-                        </SelectTrigger>
-                        <SelectContent className="glass-card">
-                          <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
-                          <SelectItem value="Merge Sort">Merge Sort</SelectItem>
-                          <SelectItem value="Quick Sort">Quick Sort</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </>
-                  ) : (
-                    <Select 
-                      value={algorithm} 
-                      onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
-                    >
-                      <SelectTrigger className="w-[200px] h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                        <SelectValue placeholder="Select Algorithm" />
-                      </SelectTrigger>
-                      <SelectContent className="glass-card">
-                        <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
-                        <SelectItem value="Merge Sort">Merge Sort</SelectItem>
-                        <SelectItem value="Quick Sort">Quick Sort</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    </div>
                   )}
                 </div>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   {[10, 50, 100].map((size) => (
-                    <motion.div key={size} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <motion.div 
+                      key={size} 
+                      whileHover={{ scale: 1.05, y: -2 }} 
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
                       <Button 
                         variant="outline" 
                         size="sm" 
                         onClick={() => generateRandomArray(size)}
-                        className="h-10 hover:gradient-primary hover:text-white hover:border-0 transition-all duration-200"
+                        className="h-9 md:h-10 hover:gradient-primary hover:text-white hover:border-0 transition-all duration-300 hover:shadow-level-2"
                       >
                         Random {size}
                       </Button>
@@ -323,23 +348,32 @@ export default function Visualizer() {
               </div>
 
               {/* Input Area */}
-              <div className="flex gap-2 mt-4">
+              <motion.div 
+                className="flex gap-2 mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
                 <Input 
                   placeholder="Enter numbers (comma-separated)" 
                   value={customInput}
                   onChange={handleCustomInput}
-                  className="font-mono text-sm h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  className="font-mono text-sm h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-sm transition-all duration-300"
                   aria-label="Custom array input"
                 />
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div 
+                  whileHover={{ scale: 1.05 }} 
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
                   <Button 
                     onClick={applyCustomInput}
-                    className="gradient-primary text-white border-0 shadow-level-2 h-12 px-6"
+                    className="gradient-primary text-white border-0 shadow-level-2 h-10 md:h-12 px-6 glow-primary transition-all duration-300 hover:shadow-level-3"
                   >
                     Load
                   </Button>
                 </motion.div>
-              </div>
+              </motion.div>
             </motion.div>
 
             {/* Visualizer Canvas - Conditional Rendering */}
@@ -348,10 +382,10 @@ export default function Visualizer() {
                 comparisonMode ? (
                   <motion.div
                     key="comparison"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.4, type: "spring", stiffness: 300, damping: 25 }}
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                    transition={{ duration: 0.5, type: "spring", stiffness: 300, damping: 25 }}
                   >
                     <ComparisonView
                       algorithmA={algorithm}
@@ -364,10 +398,10 @@ export default function Visualizer() {
                 ) : (
                   <motion.div
                     key="single"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.4, type: "spring", stiffness: 300, damping: 25 }}
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                    transition={{ duration: 0.5, type: "spring", stiffness: 300, damping: 25 }}
                     className="space-y-6"
                   >
                     <ArrayVisualizer 
@@ -391,7 +425,7 @@ export default function Visualizer() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
             >
               <ControlPanel 
                 isPlaying={isPlaying}
@@ -414,7 +448,7 @@ export default function Visualizer() {
             className="lg:col-span-1"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
           >
             {steps.length > 0 && !comparisonMode && (
               <InfoPanel 
@@ -433,16 +467,17 @@ export default function Visualizer() {
       <motion.footer 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="border-t py-6 mt-12 glass-card"
+        transition={{ duration: 0.6, delay: 0.5 }}
+        className="border-t py-6 mt-12 glass-card backdrop-blur-lg"
       >
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p>© 2025 DSA Visualizer | Premium Algorithm Learning</p>
           <div className="flex items-center gap-6">
             <motion.a 
               href="#" 
-              className="hover:text-primary transition-colors flex items-center gap-2"
-              whileHover={{ scale: 1.05 }}
+              className="hover:text-primary transition-colors duration-300 flex items-center gap-2"
+              whileHover={{ scale: 1.05, x: 2 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               <Info className="h-4 w-4" /> About
             </motion.a>
