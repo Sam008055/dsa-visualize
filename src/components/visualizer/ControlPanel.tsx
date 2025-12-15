@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Pause, Play, RotateCcw, SkipBack, SkipForward } from "lucide-react";
+import { Pause, Play, RotateCcw, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 
 interface ControlPanelProps {
   isPlaying: boolean;
@@ -12,6 +12,8 @@ interface ControlPanelProps {
   onSpeedChange: (value: number) => void;
   currentStep: number;
   totalSteps: number;
+  soundEnabled: boolean;
+  onSoundToggle: () => void;
 }
 
 export function ControlPanel({
@@ -24,6 +26,8 @@ export function ControlPanel({
   onSpeedChange,
   currentStep,
   totalSteps,
+  soundEnabled,
+  onSoundToggle,
 }: ControlPanelProps) {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 bg-card border rounded-xl shadow-sm mt-4">
@@ -68,6 +72,21 @@ export function ControlPanel({
           disabled={currentStep >= totalSteps - 1 || isPlaying}
         >
           <SkipForward className="h-4 w-4" />
+        </Button>
+
+        <div className="w-px h-8 bg-border mx-2" />
+
+        <Button
+          variant={soundEnabled ? "default" : "outline"}
+          size="icon"
+          onClick={onSoundToggle}
+          title={soundEnabled ? "Sound On" : "Sound Off"}
+        >
+          {soundEnabled ? (
+            <Volume2 className="h-4 w-4" />
+          ) : (
+            <VolumeX className="h-4 w-4" />
+          )}
         </Button>
       </div>
 

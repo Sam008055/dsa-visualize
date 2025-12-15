@@ -18,6 +18,7 @@ import {
 import { ArrayVisualizer } from "@/components/visualizer/ArrayVisualizer";
 import { ControlPanel } from "@/components/visualizer/ControlPanel";
 import { InfoPanel } from "@/components/visualizer/InfoPanel";
+import { soundManager } from "@/lib/soundManager";
 
 export default function Visualizer() {
   const [algorithm, setAlgorithm] = useState<AlgorithmType>("Bubble Sort");
@@ -29,8 +30,10 @@ export default function Visualizer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const prevStepRef = useRef<SortingStep | null>(null);
 
   // Initialize random array
   useEffect(() => {
@@ -44,8 +47,43 @@ export default function Visualizer() {
       setSteps(newSteps);
       setCurrentStepIndex(0);
       setIsPlaying(false);
+      prevStepRef.current = null;
     }
   }, [initialArray, algorithm]);
+
+  // Play sounds based on step changes
+  useEffect(() => {
+    if (currentStepIndex === 0 || !soundEnabled) {
+      prevStepRef.current = steps[currentStepIndex];
+      return;
+    }
+
+    const currentStep = steps[currentStepIndex];
+    const prevStep = prevStepRef.current;
+
+    if (!currentStep || !prevStep) {
+      prevStepRef.current = currentStep;
+      return;
+    }
+
+    // Check if this is the final sorted state
+    if (currentStep.sorted.length === initialArray.length && 
+        currentStepIndex === steps.length - 1) {
+      soundManager.playSortedSound();
+    }
+    // Check for swap
+    else if (currentStep.swapping.length > 0 && 
+             JSON.stringify(currentStep.swapping) !== JSON.stringify(prevStep.swapping)) {
+      soundManager.playSwapSound();
+    }
+    // Check for comparison
+    else if (currentStep.comparing.length > 0 && 
+             JSON.stringify(currentStep.comparing) !== JSON.stringify(prevStep.comparing)) {
+      soundManager.playCompareSound();
+    }
+
+    prevStepRef.current = currentStep;
+  }, [currentStepIndex, soundEnabled, steps, initialArray.length]);
 
   // Handle animation loop
   useEffect(() => {
@@ -78,6 +116,18 @@ export default function Visualizer() {
     }
   }, [isDarkMode]);
 
+  // Update sound manager when sound is toggled
+  useEffect(() => {
+    soundManager.setEnabled(soundEnabled);
+  }, [soundEnabled]);
+
+  // Cleanup sound manager on unmount
+  useEffect(() => {
+    return () => {
+      soundManager.dispose();
+    };
+  }, []);
+
   const generateRandomArray = (size: number) => {
     const newArray = Array.from({ length: size }, () => Math.floor(Math.random() * 100) + 5);
     setInitialArray(newArray);
@@ -105,6 +155,7 @@ export default function Visualizer() {
   const handleReset = () => {
     setIsPlaying(false);
     setCurrentStepIndex(0);
+    prevStepRef.current = null;
   };
   const handleStepForward = () => {
     if (currentStepIndex < steps.length - 1) setCurrentStepIndex(prev => prev + 1);
@@ -112,6 +163,7 @@ export default function Visualizer() {
   const handleStepBack = () => {
     if (currentStepIndex > 0) setCurrentStepIndex(prev => prev - 1);
   };
+  const handleSoundToggle = () => setSoundEnabled(!soundEnabled);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-300">
@@ -197,6 +249,8 @@ export default function Visualizer() {
               onSpeedChange={setSpeed}
               currentStep={currentStepIndex}
               totalSteps={steps.length}
+              soundEnabled={soundEnabled}
+              onSoundToggle={handleSoundToggle}
             />
           </div>
 
