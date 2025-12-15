@@ -1,10 +1,24 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, Zap, Code2 } from "lucide-react";
+import { ArrowRight, BarChart3, Zap, Code2, Moon, Sun } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useState, useEffect } from "react";
 
 export default function Landing() {
   const navigate = useNavigate();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Toggle Dark Mode with smooth transition
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    
+    if (isDarkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [isDarkMode]);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -16,7 +30,31 @@ export default function Landing() {
           </div>
           <span>DSA Visualizer</span>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
+          <motion.div 
+            whileHover={{ scale: 1.1 }} 
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="rounded-full"
+              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              <motion.div
+                initial={false}
+                animate={{ 
+                  rotate: isDarkMode ? 180 : 0,
+                  scale: [1, 1.2, 1]
+                }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              >
+                {isDarkMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              </motion.div>
+            </Button>
+          </motion.div>
           <Button variant="ghost" onClick={() => navigate("/auth")}>Sign In</Button>
           <Button onClick={() => navigate("/visualizer")}>Launch App</Button>
         </div>

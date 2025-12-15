@@ -22,7 +22,7 @@ export default function Visualizer() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -100,6 +100,8 @@ export default function Visualizer() {
   // Toggle Dark Mode with smooth transition
   useEffect(() => {
     const root = document.documentElement;
+    root.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    
     if (isDarkMode) {
       root.classList.add("dark");
     } else {
