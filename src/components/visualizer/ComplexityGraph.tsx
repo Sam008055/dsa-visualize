@@ -113,12 +113,16 @@ export function ComplexityGraph({
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
                 tickMargin={8}
                 height={50}
+                interval="preserveStartEnd"
+                minTickGap={30}
               />
               <YAxis 
                 label={{ value: 'Operations', angle: -90, position: 'insideLeft', style: { fontSize: '11px', fill: 'hsl(var(--muted-foreground))' } }}
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
                 tickMargin={8}
-                width={50}
+                width={55}
+                interval="preserveStartEnd"
+                minTickGap={20}
               />
               <Tooltip 
                 contentStyle={{ 
