@@ -1,24 +1,12 @@
 import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  AlgorithmType, 
-  generateSteps, 
-  SortingStep 
-} from "@/lib/sortingAlgorithms";
+import { AlgorithmType, generateSteps, SortingStep } from "@/lib/sortingAlgorithms";
 import { ArrayVisualizer } from "@/components/visualizer/ArrayVisualizer";
 import { ControlPanel } from "@/components/visualizer/ControlPanel";
 import { InfoPanel } from "@/components/visualizer/InfoPanel";
 import { TimelineScrubber } from "@/components/visualizer/TimelineScrubber";
 import { ComparisonView } from "@/components/visualizer/ComparisonView";
+import { VisualizerControls } from "@/components/visualizer/VisualizerControls";
 import { Navbar } from "@/components/Navbar";
 import { soundManager } from "@/lib/soundManager";
 
@@ -131,7 +119,6 @@ export default function Visualizer() {
       }
     };
     
-    // Listen for any user interaction to initialize audio
     const events = ['click', 'touchstart', 'keydown'];
     events.forEach(event => {
       document.addEventListener(event, initAudio, { once: true });
@@ -195,144 +182,25 @@ export default function Visualizer() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-500">
-      {/* Premium Navbar */}
       <Navbar isDarkMode={isDarkMode} onToggleDarkMode={() => setIsDarkMode(!isDarkMode)} />
 
-      {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           
-          {/* Left Column: Controls & Visualizer */}
           <div className="lg:col-span-2 space-y-6">
-            
-            {/* Top Controls - Glassmorphism Card */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-              className="glass-card p-4 md:p-6 rounded-2xl shadow-level-2 border-2 border-white/10"
-            >
-              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto flex-wrap">
-                  <motion.div 
-                    whileHover={{ scale: 1.05 }} 
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Button
-                      variant={comparisonMode ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setComparisonMode(!comparisonMode)}
-                      className={`transition-all duration-300 ${comparisonMode ? "gradient-primary text-white border-0 shadow-level-2 glow-primary" : "hover:gradient-primary hover:text-white hover:border-0"}`}
-                    >
-                      {comparisonMode ? "Single View" : "Compare Algorithms"}
-                    </Button>
-                  </motion.div>
-                  
-                  {comparisonMode ? (
-                    <>
-                      <div className="relative">
-                        <Select 
-                          value={algorithm} 
-                          onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
-                        >
-                          <SelectTrigger className="w-[140px] h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-xl transition-all duration-300 hover:shadow-level-2">
-                            <SelectValue placeholder="Algorithm A" />
-                          </SelectTrigger>
-                          <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
-                            <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200">Bubble Sort</SelectItem>
-                            <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200">Merge Sort</SelectItem>
-                            <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200">Quick Sort</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <span className="text-muted-foreground text-sm font-medium">vs</span>
-                      <div className="relative">
-                        <Select 
-                          value={algorithmB} 
-                          onValueChange={(v) => setAlgorithmB(v as AlgorithmType)}
-                        >
-                          <SelectTrigger className="w-[140px] h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-xl transition-all duration-300 hover:shadow-level-2">
-                            <SelectValue placeholder="Algorithm B" />
-                          </SelectTrigger>
-                          <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
-                            <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200">Bubble Sort</SelectItem>
-                            <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200">Merge Sort</SelectItem>
-                            <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200">Quick Sort</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="relative">
-                      <Select 
-                        value={algorithm} 
-                        onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
-                      >
-                        <SelectTrigger className="w-[180px] md:w-[200px] h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-xl transition-all duration-300 hover:shadow-level-2">
-                          <SelectValue placeholder="Select Algorithm" />
-                        </SelectTrigger>
-                        <SelectContent className="glass-card backdrop-blur-xl border-2 border-white/20 shadow-level-3">
-                          <SelectItem value="Bubble Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Bubble Sort</SelectItem>
-                          <SelectItem value="Merge Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Merge Sort</SelectItem>
-                          <SelectItem value="Quick Sort" className="hover:bg-primary/10 transition-colors duration-200 cursor-pointer">Quick Sort</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                </div>
+            <VisualizerControls
+              algorithm={algorithm}
+              algorithmB={algorithmB}
+              comparisonMode={comparisonMode}
+              customInput={customInput}
+              onAlgorithmChange={setAlgorithm}
+              onAlgorithmBChange={setAlgorithmB}
+              onComparisonModeToggle={() => setComparisonMode(!comparisonMode)}
+              onCustomInputChange={handleCustomInput}
+              onApplyCustomInput={applyCustomInput}
+              onGenerateRandomArray={generateRandomArray}
+            />
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  {[10, 50, 100].map((size) => (
-                    <motion.div 
-                      key={size} 
-                      whileHover={{ scale: 1.05, y: -2 }} 
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    >
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => generateRandomArray(size)}
-                        className="h-9 md:h-10 hover:gradient-primary hover:text-white hover:border-0 transition-all duration-300 hover:shadow-level-2"
-                      >
-                        Random {size}
-                      </Button>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Input Area */}
-              <motion.div 
-                className="flex gap-2 mt-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Input 
-                  placeholder="Enter numbers (comma-separated)" 
-                  value={customInput}
-                  onChange={handleCustomInput}
-                  className="font-mono text-sm h-10 md:h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2 glass-card backdrop-blur-sm transition-all duration-300"
-                  aria-label="Custom array input"
-                />
-                <motion.div 
-                  whileHover={{ scale: 1.05 }} 
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <Button 
-                    onClick={applyCustomInput}
-                    className="gradient-primary text-white border-0 shadow-level-2 h-10 md:h-12 px-6 glow-primary transition-all duration-300 hover:shadow-level-3"
-                  >
-                    Load
-                  </Button>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-
-            {/* Visualizer Canvas - Conditional Rendering */}
             <AnimatePresence mode="wait">
               {steps.length > 0 && (
                 comparisonMode ? (
@@ -365,7 +233,6 @@ export default function Visualizer() {
                       maxValue={Math.max(...initialArray, 100)} 
                     />
                     
-                    {/* Timeline Scrubber */}
                     <TimelineScrubber
                       currentStep={currentStepIndex}
                       totalSteps={steps.length}
@@ -377,7 +244,6 @@ export default function Visualizer() {
               )}
             </AnimatePresence>
 
-            {/* Playback Controls */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -399,7 +265,6 @@ export default function Visualizer() {
             </motion.div>
           </div>
 
-          {/* Right Column: Info Panel */}
           <motion.div 
             className="lg:col-span-1"
             initial={{ opacity: 0, x: 20 }}
@@ -419,7 +284,6 @@ export default function Visualizer() {
         </div>
       </main>
 
-      {/* Premium Footer */}
       <motion.footer 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

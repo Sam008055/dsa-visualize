@@ -43,9 +43,20 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
       <motion.nav 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="border-b bg-gradient-to-r from-[#06B6D4] via-[#0EA5E9] to-[#14B8A6] backdrop-blur-sm sticky top-0 z-50 shadow-level-3"
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="border-b backdrop-blur-sm sticky top-0 z-50 shadow-level-3"
+        style={{
+          background: 'linear-gradient(90deg, #06B6D4 0%, #0EA5E9 50%, #14B8A6 100%)',
+          backgroundSize: '200% 100%',
+          animation: 'gradientShift 8s ease infinite'
+        }}
       >
+        <style>{`
+          @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+        `}</style>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <motion.div 
             className="flex items-center gap-3 cursor-pointer"
@@ -71,7 +82,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
                 size="icon"
                 onClick={() => window.open('https://github.com', '_blank')}
                 className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
-                aria-label="GitHub"
+                aria-label="GitHub Repository"
               >
                 <Github className="h-5 w-5" />
               </Button>
@@ -87,7 +98,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
                 size="icon"
                 onClick={() => window.open('https://en.wikipedia.org/wiki/Sorting_algorithm', '_blank')}
                 className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
-                aria-label="Documentation"
+                aria-label="Algorithm Documentation"
               >
                 <BookOpen className="h-5 w-5" />
               </Button>
@@ -103,7 +114,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
                 size="icon"
                 onClick={handleShare}
                 className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
-                aria-label="Share"
+                aria-label="Share this visualizer"
               >
                 <Share2 className="h-5 w-5" />
               </Button>
@@ -119,7 +130,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
                 size="icon"
                 onClick={() => setShowAboutDialog(true)}
                 className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
-                aria-label="About"
+                aria-label="About this application"
               >
                 <Info className="h-5 w-5" />
               </Button>
@@ -140,7 +151,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
                 <motion.div
                   initial={false}
                   animate={{ rotate: isDarkMode ? 0 : 180, scale: isDarkMode ? 1 : 1.1 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
                   {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                 </motion.div>
@@ -151,15 +162,15 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
       </motion.nav>
 
       <Dialog open={showAboutDialog} onOpenChange={setShowAboutDialog}>
-        <DialogContent className="glass-card backdrop-blur-xl border-2 border-white/20">
+        <DialogContent className="glass-card backdrop-blur-xl border-2 border-white/20 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold gradient-primary bg-clip-text text-transparent">About DSA Visualizer</DialogTitle>
             <DialogDescription className="space-y-4 pt-4">
-              <p className="text-base">
+              <p className="text-base leading-relaxed">
                 An interactive visualization tool for understanding sorting algorithms through real-time animations and complexity analysis.
               </p>
               <div className="space-y-2">
-                <h4 className="font-semibold text-foreground">Features:</h4>
+                <h4 className="font-semibold text-foreground text-sm">Features:</h4>
                 <ul className="list-disc list-inside space-y-1 text-sm">
                   <li>Real-time algorithm visualization</li>
                   <li>Side-by-side algorithm comparison</li>
@@ -171,7 +182,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
               </div>
               <div className="pt-4 border-t">
                 <p className="text-xs text-muted-foreground">
-                  Built with React, Framer Motion, and Recharts
+                  Built with React, Framer Motion, and Recharts • 2025
                 </p>
               </div>
             </DialogDescription>
