@@ -1,47 +1,25 @@
-export type AlgorithmType = "Bubble Sort" | "Merge Sort" | "Quick Sort";
-
-export interface SortingStep {
-
+interface VisualizerControlsProps {
+  algorithm: AlgorithmType;
+  algorithmB: AlgorithmType;
+  comparisonMode: boolean;
+  customInput: string;
+  onAlgorithmChange: (algorithm: AlgorithmType) => void;
+  onAlgorithmBChange: (algorithm: AlgorithmType) => void;
+  onComparisonModeToggle: () => void;
+  onCustomInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onApplyCustomInput: () => void;
+  onGenerateRandomArray: (size: number) => void;
+  onPush: (value: number) => void;
+  onPop: () => void;
 }
 
-export function generateSteps(algorithm: AlgorithmType, initialArray: number[]): SortingStep[] {
-  const array = [...initialArray];
-  const steps: SortingStep[] = [];
-  const counters = { comparisons: 0, swaps: 0 };
-  
-  // Initial state
-  steps.push({
-    array: [...array],
-    comparing: [],
-    swapping: [],
-    sorted: [],
-    explanation: "Initial state",
-    comparisons: 0,
-    swaps: 0,
+return () => {
+  events.forEach(event => {
+    document.removeEventListener(event, initAudio);
   });
+};\n  }, [soundEnabled]);
 
-  switch (algorithm) {
-    case "Bubble Sort":
-      bubbleSort(array, steps, counters);
-      break;
-    case "Merge Sort":
-      mergeSort(array, steps, counters);
-      break;
-    case "Quick Sort":
-      quickSort(array, steps, counters);
-      break;
-  }
-
-  // Final sorted state
-  steps.push({
-    array: [...array],
-    comparing: [],
-    swapping: [],
-    sorted: array.map((_, i) => i),
-    explanation: "Sorting complete!",
-    comparisons: counters.comparisons,
-    swaps: counters.swaps,
-  });
-
-  return steps;
-}
+<div className="flex items-center gap-2 text-muted-foreground mb-4 font-mono text-sm">
+    <span>FRONT (Dequeue)</span>
+    <ArrowDown className="h-4 w-4" />
+</div>

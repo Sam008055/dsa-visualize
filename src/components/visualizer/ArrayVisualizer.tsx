@@ -1,4 +1,4 @@
-import { SortingStep } from "@/lib/sortingAlgorithms";
+import { SortingStep, AlgorithmType } from "@/lib/sortingAlgorithms";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { Check } from "lucide-react";
@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 interface ArrayVisualizerProps {
   step: SortingStep;
   maxValue: number;
+  algorithm?: AlgorithmType;
 }
 
 interface Particle {
@@ -20,7 +21,7 @@ interface Particle {
   size: number;
 }
 
-export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
+export function ArrayVisualizer({ step, maxValue, algorithm }: ArrayVisualizerProps) {
   const { array, comparing, swapping, sorted } = step;
   const [containerWidth, setContainerWidth] = useState(800);
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -50,6 +51,12 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
       return;
     }
 
+    // Only do particle effects for sorting algorithms
+    if (algorithm === "Stack Operations" || algorithm === "Queue Operations") {
+        prevStepRef.current = step;
+        return;
+    }
+
     const barWidth = Math.max(4, Math.min(60, (containerWidth - (array.length * 2)) / array.length));
     const containerRect = container.getBoundingClientRect();
 
@@ -76,7 +83,7 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
     }
 
     prevStepRef.current = step;
-  }, [step, swapping, comparing, containerWidth, array.length]);
+  }, [step, swapping, comparing, containerWidth, array.length, algorithm]);
 
   const createParticleBurst = (x: number, y: number, color: string, count: number, lifetime: number) => {
     const newParticles: Particle[] = [];
@@ -160,6 +167,78 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
       canvas.height = container.clientHeight;
     }
   }, [containerWidth]);
+
+  if (algorithm === "Stack Operations") {
+    return (
+      <div 
+        id="visualizer-container"
+        className="w-full h-[400px] flex items-center justify-center glass-card rounded-2xl shadow-level-3 p-6 overflow-hidden relative"
+      >
+        <div className="relative flex flex-col items-center">
+            <div className="text-muted-foreground mb-4 font-mono text-sm">TOP</div>
+            <div className="w-32 min-h-[300px] border-l-4 border-r-4 border-b-4 border-primary/30 rounded-b-xl flex flex-col-reverse items-center p-2 gap-2 bg-black/5 backdrop-blur-sm">
+                <AnimatePresence mode="popLayout">
+                    {array.map((value, index) => (
+                        <motion.div
+                            key={`${index}-${value}`}
+                            initial={{ opacity: 0, y: -50, scale: 0.8 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -50, scale: 0.8 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                            className="w-full h-12 rounded-lg gradient-primary flex items-center justify-center text-white font-bold shadow-lg border border-white/20"
+                        >
+                            {value}
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+                {array.length === 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-xl pointer-events-none">
+                        EMPTY
+                    </div>
+                )}
+            </div>
+            <div className="text-muted-foreground mt-2 font-mono text-sm">BOTTOM</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (algorithm === "Queue Operations") {
+    return (
+      <div 
+        id="visualizer-container"
+        className="w-full h-[400px] flex items-center justify-center glass-card rounded-2xl shadow-level-3 p-6 overflow-hidden relative"
+      >
+        <div className="relative flex flex-col items-center w-full max-w-3xl">
+            <div className="flex justify-between w-full px-12 mb-2 text-muted-foreground font-mono text-sm">
+                <span>FRONT (Dequeue)</span>
+                <span>REAR (Enqueue)</span>
+            </div>
+            <div className="w-full h-32 border-t-4 border-b-4 border-primary/30 flex items-center px-4 gap-2 overflow-x-auto bg-black/5 backdrop-blur-sm relative">
+                <AnimatePresence mode="popLayout">
+                    {array.map((value, index) => (
+                        <motion.div
+                            key={`${index}-${value}`}
+                            initial={{ opacity: 0, x: 50, scale: 0.8 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, x: -50, scale: 0.8 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                            className="min-w-[60px] h-[60px] rounded-xl gradient-accent flex items-center justify-center text-white font-bold shadow-lg border border-white/20"
+                        >
+                            {value}
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+                {array.length === 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-xl pointer-events-none">
+                        EMPTY QUEUE
+                    </div>
+                )}
+            </div>
+        </div>
+      </div>
+    );
+  }
 
   const barWidth = Math.max(4, Math.min(60, (containerWidth - (array.length * 2)) / array.length));
 

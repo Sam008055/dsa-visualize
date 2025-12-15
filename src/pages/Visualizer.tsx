@@ -9,6 +9,7 @@ import { ComparisonView } from "@/components/visualizer/ComparisonView";
 import { VisualizerControls } from "@/components/visualizer/VisualizerControls";
 import { Navbar } from "@/components/Navbar";
 import { soundManager } from "@/lib/soundManager";
+import { toast } from "sonner";
 
 export default function Visualizer() {
   const [algorithm, setAlgorithm] = useState<AlgorithmType>("Bubble Sort");
@@ -34,6 +35,24 @@ export default function Visualizer() {
 
   // Generate steps when array or algorithm changes
   useEffect(() => {
+    // Skip automatic generation for Stack/Queue interactive mode
+    if (algorithm === "Stack Operations" || algorithm === "Queue Operations") {
+        if (steps.length === 0) {
+            // Initialize with empty state if needed
+            setSteps([{
+                array: [],
+                comparing: [],
+                swapping: [],
+                sorted: [],
+                explanation: `${algorithm} initialized`,
+                comparisons: 0,
+                swaps: 0
+            }]);
+            setCurrentStepIndex(0);
+        }
+        return;
+    }
+
     if (initialArray.length > 0) {
       const newSteps = generateSteps(algorithm, initialArray);
       setSteps(newSteps);
@@ -42,6 +61,23 @@ export default function Visualizer() {
       prevStepRef.current = null;
     }
   }, [initialArray, algorithm]);
+
+  // Reset steps when switching to Stack/Queue
+  useEffect(() => {
+      if (algorithm === "Stack Operations" || algorithm === "Queue Operations") {
+          setSteps([{
+              array: [],
+              comparing: [],
+              swapping: [],
+              sorted: [],
+              explanation: `${algorithm} Ready`,
+              comparisons: 0,
+              swaps: 0
+          }]);
+          setCurrentStepIndex(0);
+          setIsPlaying(false);
+      }
+  }, [algorithm]);
 
   // Play sounds based on step changes
   useEffect(() => {
@@ -59,7 +95,8 @@ export default function Visualizer() {
     }
 
     if (currentStep.sorted.length === initialArray.length && 
-        currentStepIndex === steps.length - 1) {
+        currentStepIndex === steps.length - 1 && 
+        algorithm !== "Stack Operations" && algorithm !== "Queue Operations") {
       soundManager.playSortedSound();
     }
     else if (currentStep.swapping.length > 0 && 
@@ -72,7 +109,7 @@ export default function Visualizer() {
     }
 
     prevStepRef.current = currentStep;
-  }, [currentStepIndex, soundEnabled, steps, initialArray.length]);
+  }, [currentStepIndex, soundEnabled, steps, initialArray.length, algorithm]);
 
   // Handle animation loop
   useEffect(() => {
@@ -180,6 +217,93 @@ export default function Visualizer() {
     setCurrentStepIndex(step);
   };
 
+  // Stack/Queue Operations
+  const handlePush = (value: number) => {
+      if (algorithm === "Stack Operations") {
+          const currentArray = steps[steps.length - 1].array;
+          if (currentArray.length >= 10) {
+              toast.error("Stack overflow! Max 10 elements.");
+              return;
+          }
+          const newArray = [...currentArray, value];
+          const newStep: SortingStep = {
+              array: newArray,
+              comparing: [],
+              swapping: [],
+              sorted: [],
+              explanation: `Pushed ${value} onto the stack`,
+              comparisons: 0,
+              swaps: 0
+          };
+          setSteps(prev => [...prev, newStep]);
+          setCurrentStepIndex(prev => prev + 1);
+          if (soundEnabled) soundManager.playSwapSound();
+      } else if (algorithm === "Queue Operations") {
+          const currentArray = steps[steps.length - 1].array;
+          if (currentArray.length >= 10) {
+              toast.error("Queue full! Max 10 elements.");
+              return;
+          }
+          const newArray = [...currentArray, value];
+          const newStep: SortingStep = {
+              array: newArray,
+              comparing: [],
+              swapping: [],
+              sorted: [],
+              explanation: `Enqueued ${value}`,
+              comparisons: 0,
+              swaps: 0
+          };
+          setSteps(prev => [...prev, newStep]);
+          setCurrentStepIndex(prev => prev + 1);
+          if (soundEnabled) soundManager.playSwapSound();
+      }
+  };
+
+  const handlePop = () => {
+      if (algorithm === "Stack Operations") {
+          const currentArray = steps[steps.length - 1].array;
+          if (currentArray.length === 0) {
+              toast.error("Stack underflow! Stack is empty.");
+              return;
+          }
+          const val = currentArray[currentArray.length - 1];
+          const newArray = currentArray.slice(0, -1);
+          const newStep: SortingStep = {
+              array: newArray,
+              comparing: [],
+              swapping: [],
+              sorted: [],
+              explanation: `Popped ${val} from the stack`,
+              comparisons: 0,
+              swaps: 0
+          };
+          setSteps(prev => [...prev, newStep]);
+          setCurrentStepIndex(prev => prev + 1);
+          if (soundEnabled) soundManager.playCompareSound();
+      } else if (algorithm === "Queue Operations") {
+          const currentArray = steps[steps.length - 1].array;
+          if (currentArray.length === 0) {
+              toast.error("Queue empty!");
+              return;
+          }
+          const val = currentArray[0];
+          const newArray = currentArray.slice(1);
+          const newStep: SortingStep = {
+              array: newArray,
+              comparing: [],
+              swapping: [],
+              sorted: [],
+              explanation: `Dequeued ${val}`,
+              comparisons: 0,
+              swaps: 0
+          };
+          setSteps(prev => [...prev, newStep]);
+          setCurrentStepIndex(prev => prev + 1);
+          if (soundEnabled) soundManager.playCompareSound();
+      }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-500">
       <Navbar isDarkMode={isDarkMode} onToggleDarkMode={() => setIsDarkMode(!isDarkMode)} />
@@ -199,6 +323,8 @@ export default function Visualizer() {
               onCustomInputChange={handleCustomInput}
               onApplyCustomInput={applyCustomInput}
               onGenerateRandomArray={generateRandomArray}
+              onPush={handlePush}
+              onPop={handlePop}
             />
 
             <AnimatePresence mode="wait">
@@ -231,6 +357,7 @@ export default function Visualizer() {
                     <ArrayVisualizer 
                       step={steps[currentStepIndex]} 
                       maxValue={Math.max(...initialArray, 100)} 
+                      algorithm={algorithm}
                     />
                     
                     <TimelineScrubber
