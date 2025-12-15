@@ -187,16 +187,18 @@ export function ControlPanel({
       <AnimatePresence>
         {isPlaying && (
           <motion.div
-            initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: "auto" }}
-            exit={{ opacity: 0, y: -10, height: 0 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="mt-4 text-center text-sm text-primary font-medium"
+            className="mt-3 pt-3 border-t text-center text-xs text-primary font-medium"
           >
             <motion.span
               animate={{ opacity: [1, 0.5, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
+              className="inline-flex items-center gap-2"
             >
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               Playing...
             </motion.span>
           </motion.div>
