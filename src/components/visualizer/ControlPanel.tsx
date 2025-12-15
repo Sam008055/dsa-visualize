@@ -163,7 +163,14 @@ export function ControlPanel({
             <span className="whitespace-nowrap">Speed: <span className="text-primary font-bold">{speed}x</span></span>
             <span className="whitespace-nowrap">Step <span className="text-primary font-bold">{currentStep + 1}</span> of {totalSteps}</span>
           </div>
-          <div className="relative">
+          <div className="relative pt-6">
+            <div className="absolute top-0 left-0 right-0 flex justify-between text-[10px] text-muted-foreground font-mono">
+              <span>0.25x</span>
+              <span>0.5x</span>
+              <span>1x</span>
+              <span>1.5x</span>
+              <span>2x</span>
+            </div>
             <Slider
               value={[speed]}
               min={0.25}
@@ -173,13 +180,6 @@ export function ControlPanel({
               className="cursor-pointer"
               aria-label="Playback speed"
             />
-            <div className="absolute -top-8 left-0 right-0 flex justify-between text-[10px] text-muted-foreground font-mono">
-              <span>0.25x</span>
-              <span>0.5x</span>
-              <span>1x</span>
-              <span>1.5x</span>
-              <span>2x</span>
-            </div>
           </div>
         </div>
       </div>
