@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Moon, Sun, BarChart3, Share2, Info } from "lucide-react";
 import { 
   AlgorithmType, 
   generateSteps, 
@@ -20,6 +19,7 @@ import { ControlPanel } from "@/components/visualizer/ControlPanel";
 import { InfoPanel } from "@/components/visualizer/InfoPanel";
 import { TimelineScrubber } from "@/components/visualizer/TimelineScrubber";
 import { ComparisonView } from "@/components/visualizer/ComparisonView";
+import { Navbar } from "@/components/Navbar";
 import { soundManager } from "@/lib/soundManager";
 
 export default function Visualizer() {
@@ -181,66 +181,8 @@ export default function Visualizer() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-500">
-      {/* Premium Navbar with Gradient */}
-      <motion.nav 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="border-b bg-gradient-to-r from-[#06B6D4] via-[#0EA5E9] to-[#14B8A6] backdrop-blur-sm sticky top-0 z-50 shadow-level-3"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <motion.div 
-            className="flex items-center gap-3 cursor-pointer"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm shadow-lg">
-              <BarChart3 className="h-6 w-6 text-white" />
-            </div>
-            <span className="font-bold text-xl tracking-tight text-white drop-shadow-md">DSA Visualizer</span>
-          </motion.div>
-          
-          <div className="flex items-center gap-3">
-            <motion.div 
-              whileHover={{ scale: 1.1, rotate: 5 }} 
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
-                aria-label="Share"
-              >
-                <Share2 className="h-5 w-5" />
-              </Button>
-            </motion.div>
-            
-            <motion.div 
-              whileHover={{ scale: 1.1 }} 
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10 transition-all duration-300"
-                aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                <motion.div
-                  initial={false}
-                  animate={{ rotate: isDarkMode ? 0 : 180, scale: isDarkMode ? 1 : 1.1 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                >
-                  {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                </motion.div>
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </motion.nav>
+      {/* Premium Navbar */}
+      <Navbar isDarkMode={isDarkMode} onToggleDarkMode={() => setIsDarkMode(!isDarkMode)} />
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 w-full">
@@ -475,11 +417,19 @@ export default function Visualizer() {
           <div className="flex items-center gap-6">
             <motion.a 
               href="#" 
-              className="hover:text-primary transition-colors duration-300 flex items-center gap-2"
+              className="hover:text-primary transition-colors duration-300"
               whileHover={{ scale: 1.05, x: 2 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Info className="h-4 w-4" /> About
+              Privacy Policy
+            </motion.a>
+            <motion.a 
+              href="#" 
+              className="hover:text-primary transition-colors duration-300"
+              whileHover={{ scale: 1.05, x: 2 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              Terms of Service
             </motion.a>
           </div>
         </div>

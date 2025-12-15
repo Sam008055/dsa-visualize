@@ -97,59 +97,61 @@ export function ComplexityGraph({
         <CardTitle className="text-sm font-medium">Complexity Analysis</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <ResponsiveContainer width="100%" height={250}>
-          <AreaChart data={data}>
-            <defs>
-              <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis 
-              dataKey="step" 
-              label={{ value: 'Step', position: 'insideBottom', offset: -5 }}
-              className="text-xs"
-              tick={{ fill: 'hsl(var(--muted-foreground))' }}
-            />
-            <YAxis 
-              label={{ value: 'Operations', angle: -90, position: 'insideLeft' }}
-              className="text-xs"
-              tick={{ fill: 'hsl(var(--muted-foreground))' }}
-            />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'hsl(var(--popover))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '0.5rem',
-                fontSize: '0.875rem',
-                backdropFilter: 'blur(10px)'
-              }}
-              labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
-            />
-            <Legend 
-              wrapperStyle={{ fontSize: '0.75rem' }}
-              iconType="line"
-            />
-            <Area
-              type="monotone"
-              dataKey="actual"
-              stroke="hsl(var(--primary))"
-              fill="url(#actualGradient)"
-              strokeWidth={2}
-              name="Actual Operations"
-            />
-            <Line
-              type="monotone"
-              dataKey="theoretical"
-              stroke="hsl(var(--destructive))"
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              dot={false}
-              name="Theoretical Worst"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+        <div className="w-full h-[250px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data}>
+              <defs>
+                <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" opacity={0.3} />
+              <XAxis 
+                dataKey="step" 
+                label={{ value: 'Step', position: 'insideBottom', offset: -5 }}
+                className="text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              />
+              <YAxis 
+                label={{ value: 'Operations', angle: -90, position: 'insideLeft' }}
+                className="text-xs"
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'hsl(var(--popover))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '0.5rem',
+                  fontSize: '0.875rem',
+                  backdropFilter: 'blur(10px)'
+                }}
+                labelStyle={{ color: 'hsl(var(--popover-foreground))' }}
+              />
+              <Legend 
+                wrapperStyle={{ fontSize: '0.75rem' }}
+                iconType="line"
+              />
+              <Area
+                type="monotone"
+                dataKey="actual"
+                stroke="hsl(var(--primary))"
+                fill="url(#actualGradient)"
+                strokeWidth={2}
+                name="Actual Operations"
+              />
+              <Line
+                type="monotone"
+                dataKey="theoretical"
+                stroke="hsl(var(--destructive))"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={false}
+                name="Theoretical Worst"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
 
         <div className="space-y-2 pt-2 border-t">
           <motion.div 

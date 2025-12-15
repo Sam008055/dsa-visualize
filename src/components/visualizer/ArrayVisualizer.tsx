@@ -208,14 +208,14 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
               initial={false}
               animate={{
                 height: `${heightPercentage}%`,
-                scale: isSwapping ? 1.2 : isComparing ? 1.15 : 1.0,
-                rotate: isSwapping ? [0, 180, 360] : 0,
+                scale: isSwapping ? 1.1 : isComparing ? 1.05 : 1.0,
+                x: isSwapping ? [0, -3, 3, 0] : 0,
               }}
               transition={{ 
                 type: "spring", 
                 stiffness: 300, 
                 damping: 25,
-                rotate: { duration: 0.3 }
+                x: { duration: 0.3 }
               }}
               style={{
                 width: `${barWidth}px`,
