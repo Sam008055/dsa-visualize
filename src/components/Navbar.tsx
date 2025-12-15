@@ -71,7 +71,7 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
               <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm shadow-lg">
                 <BarChart3 className="h-6 w-6 text-white" />
               </div>
-              <span className="font-bold text-xl tracking-tight text-white drop-shadow-md hidden sm:block">DSA Visualizer</span>
+              <span className="font-bold text-xl tracking-tight text-white drop-shadow-lg hidden sm:block" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>DSA Visualizer</span>
             </motion.div>
 
             <div className="hidden md:flex items-center gap-1">
