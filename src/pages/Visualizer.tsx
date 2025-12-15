@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, ChangeEvent } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Select, 
   SelectContent, 
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Moon, Sun, Github, Linkedin, BarChart3 } from "lucide-react";
+import { Moon, Sun, BarChart3, Share2, Info } from "lucide-react";
 import { 
   AlgorithmType, 
   generateSteps, 
@@ -33,7 +33,7 @@ export default function Visualizer() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -70,17 +70,14 @@ export default function Visualizer() {
       return;
     }
 
-    // Check if this is the final sorted state
     if (currentStep.sorted.length === initialArray.length && 
         currentStepIndex === steps.length - 1) {
       soundManager.playSortedSound();
     }
-    // Check for swap
     else if (currentStep.swapping.length > 0 && 
              JSON.stringify(currentStep.swapping) !== JSON.stringify(prevStep.swapping)) {
       soundManager.playSwapSound();
     }
-    // Check for comparison
     else if (currentStep.comparing.length > 0 && 
              JSON.stringify(currentStep.comparing) !== JSON.stringify(prevStep.comparing)) {
       soundManager.playCompareSound();
@@ -92,7 +89,7 @@ export default function Visualizer() {
   // Handle animation loop
   useEffect(() => {
     if (isPlaying) {
-      const intervalTime = 1000 / (speed * 2); // Base speed adjustment
+      const intervalTime = 1000 / (speed * 2);
       timerRef.current = setInterval(() => {
         setCurrentStepIndex((prev) => {
           if (prev >= steps.length - 1) {
@@ -123,9 +120,7 @@ export default function Visualizer() {
   // Update sound manager when sound is toggled
   useEffect(() => {
     soundManager.setEnabled(soundEnabled);
-    // Ensure AudioContext is resumed on user interaction
     if (soundEnabled && soundManager.isEnabled()) {
-      // Try to resume the audio context
       const resumeAudio = () => {
         soundManager.setEnabled(true);
         document.removeEventListener('click', resumeAudio);
@@ -185,25 +180,57 @@ export default function Visualizer() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-300">
-      {/* Navbar */}
-      <nav className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      {/* Premium Navbar with Gradient */}
+      <motion.nav 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="border-b bg-gradient-to-r from-[#06B6D4] to-[#14B8A6] backdrop-blur-sm sticky top-0 z-50 shadow-level-3"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-primary/10 p-2 rounded-lg">
-              <BarChart3 className="h-6 w-6 text-primary" />
-            </div>
-            <span className="font-bold text-xl tracking-tight">DSA Visualizer</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="rounded-full"
+          <motion.div 
+            className="flex items-center gap-3"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
+            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+              <BarChart3 className="h-6 w-6 text-white" />
+            </div>
+            <span className="font-bold text-xl tracking-tight text-white">DSA Visualizer</span>
+          </motion.div>
+          
+          <div className="flex items-center gap-3">
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10"
+                aria-label="Share"
+              >
+                <Share2 className="h-5 w-5" />
+              </Button>
+            </motion.div>
+            
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="rounded-full bg-white/10 hover:bg-white/20 text-white border-0 h-10 w-10"
+                aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                <motion.div
+                  initial={false}
+                  animate={{ rotate: isDarkMode ? 0 : 180 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                </motion.div>
+              </Button>
+            </motion.div>
+          </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
@@ -212,128 +239,183 @@ export default function Visualizer() {
           {/* Left Column: Controls & Visualizer */}
           <div className="lg:col-span-2 space-y-6">
             
-            {/* Top Controls */}
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
-              <div className="flex items-center gap-4 w-full sm:w-auto flex-wrap">
-                <Button
-                  variant={comparisonMode ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setComparisonMode(!comparisonMode)}
-                >
-                  {comparisonMode ? "Single View" : "Compare Algorithms"}
-                </Button>
-                
-                {comparisonMode ? (
-                  <>
+            {/* Top Controls - Glassmorphism Card */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="glass-card p-6 rounded-2xl shadow-level-2"
+            >
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="flex items-center gap-4 w-full sm:w-auto flex-wrap">
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      variant={comparisonMode ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setComparisonMode(!comparisonMode)}
+                      className={comparisonMode ? "gradient-primary text-white border-0 shadow-level-2" : ""}
+                    >
+                      {comparisonMode ? "Single View" : "Compare Algorithms"}
+                    </Button>
+                  </motion.div>
+                  
+                  {comparisonMode ? (
+                    <>
+                      <Select 
+                        value={algorithm} 
+                        onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
+                      >
+                        <SelectTrigger className="w-[140px] h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                          <SelectValue placeholder="Algorithm A" />
+                        </SelectTrigger>
+                        <SelectContent className="glass-card">
+                          <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
+                          <SelectItem value="Merge Sort">Merge Sort</SelectItem>
+                          <SelectItem value="Quick Sort">Quick Sort</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <span className="text-muted-foreground text-sm font-medium">vs</span>
+                      <Select 
+                        value={algorithmB} 
+                        onValueChange={(v) => setAlgorithmB(v as AlgorithmType)}
+                      >
+                        <SelectTrigger className="w-[140px] h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                          <SelectValue placeholder="Algorithm B" />
+                        </SelectTrigger>
+                        <SelectContent className="glass-card">
+                          <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
+                          <SelectItem value="Merge Sort">Merge Sort</SelectItem>
+                          <SelectItem value="Quick Sort">Quick Sort</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </>
+                  ) : (
                     <Select 
                       value={algorithm} 
                       onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
                     >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue placeholder="Algorithm A" />
+                      <SelectTrigger className="w-[200px] h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        <SelectValue placeholder="Select Algorithm" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="glass-card">
                         <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
                         <SelectItem value="Merge Sort">Merge Sort</SelectItem>
                         <SelectItem value="Quick Sort">Quick Sort</SelectItem>
                       </SelectContent>
                     </Select>
-                    <span className="text-muted-foreground text-sm">vs</span>
-                    <Select 
-                      value={algorithmB} 
-                      onValueChange={(v) => setAlgorithmB(v as AlgorithmType)}
-                    >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue placeholder="Algorithm B" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
-                        <SelectItem value="Merge Sort">Merge Sort</SelectItem>
-                        <SelectItem value="Quick Sort">Quick Sort</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </>
-                ) : (
-                  <Select 
-                    value={algorithm} 
-                    onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  {[10, 50, 100].map((size) => (
+                    <motion.div key={size} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => generateRandomArray(size)}
+                        className="h-10 hover:gradient-primary hover:text-white hover:border-0 transition-all duration-200"
+                      >
+                        Random {size}
+                      </Button>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Input Area */}
+              <div className="flex gap-2 mt-4">
+                <Input 
+                  placeholder="Enter numbers (comma-separated)" 
+                  value={customInput}
+                  onChange={handleCustomInput}
+                  className="font-mono text-sm h-12 border-2 focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  aria-label="Custom array input"
+                />
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button 
+                    onClick={applyCustomInput}
+                    className="gradient-primary text-white border-0 shadow-level-2 h-12 px-6"
                   >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select Algorithm" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
-                      <SelectItem value="Merge Sort">Merge Sort</SelectItem>
-                      <SelectItem value="Quick Sort">Quick Sort</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
+                    Load
+                  </Button>
+                </motion.div>
               </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Button variant="outline" size="sm" onClick={() => generateRandomArray(10)}>Random 10</Button>
-                <Button variant="outline" size="sm" onClick={() => generateRandomArray(50)}>Random 50</Button>
-                <Button variant="outline" size="sm" onClick={() => generateRandomArray(100)}>Random 100</Button>
-              </div>
-            </div>
-
-            {/* Input Area */}
-            <div className="flex gap-2">
-              <Input 
-                placeholder="Enter numbers (comma-separated)" 
-                value={customInput}
-                onChange={handleCustomInput}
-                className="font-mono text-sm"
-              />
-              <Button onClick={applyCustomInput}>Load</Button>
-            </div>
+            </motion.div>
 
             {/* Visualizer Canvas - Conditional Rendering */}
-            {steps.length > 0 && (
-              comparisonMode ? (
-                <ComparisonView
-                  algorithmA={algorithm}
-                  algorithmB={algorithmB}
-                  initialArray={initialArray}
-                  currentStepIndex={currentStepIndex}
-                  maxValue={Math.max(...initialArray, 100)}
-                />
-              ) : (
-                <>
-                  <ArrayVisualizer 
-                    step={steps[currentStepIndex]} 
-                    maxValue={Math.max(...initialArray, 100)} 
-                  />
-                  
-                  {/* Timeline Scrubber */}
-                  <TimelineScrubber
-                    currentStep={currentStepIndex}
-                    totalSteps={steps.length}
-                    onStepChange={handleTimelineChange}
-                    isPlaying={isPlaying}
-                  />
-                </>
-              )
-            )}
+            <AnimatePresence mode="wait">
+              {steps.length > 0 && (
+                comparisonMode ? (
+                  <motion.div
+                    key="comparison"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4, type: "spring", stiffness: 300, damping: 25 }}
+                  >
+                    <ComparisonView
+                      algorithmA={algorithm}
+                      algorithmB={algorithmB}
+                      initialArray={initialArray}
+                      currentStepIndex={currentStepIndex}
+                      maxValue={Math.max(...initialArray, 100)}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="single"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4, type: "spring", stiffness: 300, damping: 25 }}
+                    className="space-y-6"
+                  >
+                    <ArrayVisualizer 
+                      step={steps[currentStepIndex]} 
+                      maxValue={Math.max(...initialArray, 100)} 
+                    />
+                    
+                    {/* Timeline Scrubber */}
+                    <TimelineScrubber
+                      currentStep={currentStepIndex}
+                      totalSteps={steps.length}
+                      onStepChange={handleTimelineChange}
+                      isPlaying={isPlaying}
+                    />
+                  </motion.div>
+                )
+              )}
+            </AnimatePresence>
 
             {/* Playback Controls */}
-            <ControlPanel 
-              isPlaying={isPlaying}
-              onPlayPause={handlePlayPause}
-              onReset={handleReset}
-              onStepForward={handleStepForward}
-              onStepBack={handleStepBack}
-              speed={speed}
-              onSpeedChange={setSpeed}
-              currentStep={currentStepIndex}
-              totalSteps={steps.length}
-              soundEnabled={soundEnabled}
-              onSoundToggle={handleSoundToggle}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
+              <ControlPanel 
+                isPlaying={isPlaying}
+                onPlayPause={handlePlayPause}
+                onReset={handleReset}
+                onStepForward={handleStepForward}
+                onStepBack={handleStepBack}
+                speed={speed}
+                onSpeedChange={setSpeed}
+                currentStep={currentStepIndex}
+                totalSteps={steps.length}
+                soundEnabled={soundEnabled}
+                onSoundToggle={handleSoundToggle}
+              />
+            </motion.div>
           </div>
 
           {/* Right Column: Info Panel */}
-          <div className="lg:col-span-1">
+          <motion.div 
+            className="lg:col-span-1"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
             {steps.length > 0 && !comparisonMode && (
               <InfoPanel 
                 algorithm={algorithm} 
@@ -343,24 +425,30 @@ export default function Visualizer() {
                 arraySize={initialArray.length}
               />
             )}
-          </div>
+          </motion.div>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t py-8 mt-12 bg-card/50">
+      {/* Premium Footer */}
+      <motion.footer 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="border-t py-6 mt-12 glass-card"
+      >
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© 2025 DSA Visualizer | Built with React, Framer Motion</p>
+          <p>© 2025 DSA Visualizer | Premium Algorithm Learning</p>
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-primary transition-colors flex items-center gap-2">
-              <Github className="h-4 w-4" /> GitHub
-            </a>
-            <a href="#" className="hover:text-primary transition-colors flex items-center gap-2">
-              <Linkedin className="h-4 w-4" /> LinkedIn
-            </a>
+            <motion.a 
+              href="#" 
+              className="hover:text-primary transition-colors flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Info className="h-4 w-4" /> About
+            </motion.a>
           </div>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 }

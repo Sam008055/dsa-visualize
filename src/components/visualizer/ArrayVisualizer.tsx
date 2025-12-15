@@ -1,6 +1,7 @@
 import { SortingStep } from "@/lib/sortingAlgorithms";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
+import { Check } from "lucide-react";
 
 interface ArrayVisualizerProps {
   step: SortingStep;
@@ -52,7 +53,6 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
     const barWidth = Math.max(4, Math.min(60, (containerWidth - (array.length * 2)) / array.length));
     const containerRect = container.getBoundingClientRect();
 
-    // Detect new swaps - check if swapping array has changed
     const hasNewSwap = swapping.length > 0 && 
       (!prevStep || JSON.stringify(swapping.sort()) !== JSON.stringify(prevStep.swapping.sort()));
     
@@ -60,11 +60,10 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
       swapping.forEach(index => {
         const x = index * (barWidth + 2) + barWidth / 2;
         const y = containerRect.height / 2;
-        createParticleBurst(x, y, "#EF4444", 10, 500);
+        createParticleBurst(x, y, "#EF4444", 12, 500);
       });
     }
 
-    // Detect new comparisons - check if comparing array has changed
     const hasNewComparison = comparing.length > 0 && 
       (!prevStep || JSON.stringify(comparing.sort()) !== JSON.stringify(prevStep.comparing.sort()));
     
@@ -72,7 +71,7 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
       comparing.forEach(index => {
         const x = index * (barWidth + 2) + barWidth / 2;
         const y = containerRect.height / 2;
-        createParticleBurst(x, y, "#F59E0B", 6, 300);
+        createParticleBurst(x, y, "#F59E0B", 8, 300);
       });
     }
 
@@ -108,23 +107,20 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
     if (!ctx) return;
 
     const animate = () => {
-      // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Update and draw particles
       setParticles(prevParticles => {
         const updatedParticles = prevParticles
           .map(particle => ({
             ...particle,
             x: particle.x + particle.vx,
             y: particle.y + particle.vy,
-            vx: particle.vx * 0.98, // Deceleration
+            vx: particle.vx * 0.98,
             vy: particle.vy * 0.98,
-            life: particle.life - 16, // Assume ~60fps
+            life: particle.life - 16,
           }))
           .filter(particle => particle.life > 0);
 
-        // Draw particles
         updatedParticles.forEach(particle => {
           const alpha = particle.life / particle.maxLife;
           const scale = 0.5 + alpha * 0.5;
@@ -167,10 +163,21 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
 
   const barWidth = Math.max(4, Math.min(60, (containerWidth - (array.length * 2)) / array.length));
 
+  const getBarStyle = (index: number) => {
+    if (sorted.includes(index)) {
+      return "gradient-success glow-success";
+    } else if (swapping.includes(index)) {
+      return "gradient-destructive glow-destructive";
+    } else if (comparing.includes(index)) {
+      return "gradient-accent glow-accent";
+    }
+    return "gradient-primary";
+  };
+
   return (
     <div 
       id="visualizer-container"
-      className="w-full h-[400px] flex items-end justify-center bg-card rounded-xl border shadow-sm p-4 overflow-hidden relative"
+      className="w-full h-[400px] flex items-end justify-center glass-card rounded-2xl shadow-level-3 p-6 overflow-hidden relative group hover:shadow-level-4 transition-shadow duration-300"
     >
       {/* Particle canvas overlay */}
       <canvas
@@ -179,19 +186,20 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
         style={{ zIndex: 10 }}
       />
       
+      {/* Subtle grid pattern on hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(100, 116, 139, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(100, 116, 139, 0.05) 1px, transparent 1px)',
+          backgroundSize: '20px 20px'
+        }}
+      />
+      
       <div className="flex items-end justify-center gap-[2px]" style={{ height: "100%" }}>
         {array.map((value, index) => {
-          let color = "bg-primary";
-          
-          if (sorted.includes(index)) {
-            color = "bg-emerald-500";
-          } else if (swapping.includes(index)) {
-            color = "bg-destructive";
-          } else if (comparing.includes(index)) {
-            color = "bg-amber-500";
-          }
-
           const heightPercentage = (value / maxValue) * 100;
+          const isSorted = sorted.includes(index);
+          const isSwapping = swapping.includes(index);
+          const isComparing = comparing.includes(index);
 
           return (
             <motion.div
@@ -200,26 +208,46 @@ export function ArrayVisualizer({ step, maxValue }: ArrayVisualizerProps) {
               initial={false}
               animate={{
                 height: `${heightPercentage}%`,
-                backgroundColor: sorted.includes(index) 
-                  ? "var(--color-chart-4)" 
-                  : swapping.includes(index) 
-                    ? "var(--color-destructive)" 
-                    : comparing.includes(index) 
-                      ? "var(--color-accent)" 
-                      : "var(--color-primary)",
+                scale: isSwapping ? 1.2 : isComparing ? 1.15 : 1.0,
+                rotate: isSwapping ? [0, 180, 360] : 0,
               }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 25,
+                rotate: { duration: 0.3 }
+              }}
               style={{
                 width: `${barWidth}px`,
                 minHeight: "4px",
               }}
-              className={`rounded-t-md relative group ${color}`}
+              className={`rounded-t-xl relative group/bar ${getBarStyle(index)} border-2 border-white/20`}
             >
+              {/* Value label */}
               {array.length <= 20 && (
-                <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium text-muted-foreground">
+                <motion.span 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-bold text-foreground font-mono"
+                >
                   {value}
-                </span>
+                </motion.span>
               )}
+              
+              {/* Checkmark for sorted elements */}
+              <AnimatePresence>
+                {isSorted && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    className="absolute top-2 left-1/2 -translate-x-1/2 bg-white rounded-full p-1"
+                  >
+                    <Check className="h-3 w-3 text-green-600" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           );
         })}
