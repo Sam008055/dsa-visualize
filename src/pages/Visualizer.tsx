@@ -19,10 +19,13 @@ import { ArrayVisualizer } from "@/components/visualizer/ArrayVisualizer";
 import { ControlPanel } from "@/components/visualizer/ControlPanel";
 import { InfoPanel } from "@/components/visualizer/InfoPanel";
 import { TimelineScrubber } from "@/components/visualizer/TimelineScrubber";
+import { ComparisonView } from "@/components/visualizer/ComparisonView";
 import { soundManager } from "@/lib/soundManager";
 
 export default function Visualizer() {
   const [algorithm, setAlgorithm] = useState<AlgorithmType>("Bubble Sort");
+  const [algorithmB, setAlgorithmB] = useState<AlgorithmType>("Merge Sort");
+  const [comparisonMode, setComparisonMode] = useState(false);
   const [arraySize, setArraySize] = useState(20);
   const [customInput, setCustomInput] = useState("");
   const [initialArray, setInitialArray] = useState<number[]>([]);
@@ -211,20 +214,60 @@ export default function Visualizer() {
             
             {/* Top Controls */}
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
-              <div className="flex items-center gap-4 w-full sm:w-auto">
-                <Select 
-                  value={algorithm} 
-                  onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
+              <div className="flex items-center gap-4 w-full sm:w-auto flex-wrap">
+                <Button
+                  variant={comparisonMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setComparisonMode(!comparisonMode)}
                 >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select Algorithm" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
-                    <SelectItem value="Merge Sort">Merge Sort</SelectItem>
-                    <SelectItem value="Quick Sort">Quick Sort</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {comparisonMode ? "Single View" : "Compare Algorithms"}
+                </Button>
+                
+                {comparisonMode ? (
+                  <>
+                    <Select 
+                      value={algorithm} 
+                      onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="Algorithm A" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
+                        <SelectItem value="Merge Sort">Merge Sort</SelectItem>
+                        <SelectItem value="Quick Sort">Quick Sort</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span className="text-muted-foreground text-sm">vs</span>
+                    <Select 
+                      value={algorithmB} 
+                      onValueChange={(v) => setAlgorithmB(v as AlgorithmType)}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="Algorithm B" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
+                        <SelectItem value="Merge Sort">Merge Sort</SelectItem>
+                        <SelectItem value="Quick Sort">Quick Sort</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </>
+                ) : (
+                  <Select 
+                    value={algorithm} 
+                    onValueChange={(v) => setAlgorithm(v as AlgorithmType)}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select Algorithm" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Bubble Sort">Bubble Sort</SelectItem>
+                      <SelectItem value="Merge Sort">Merge Sort</SelectItem>
+                      <SelectItem value="Quick Sort">Quick Sort</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
               <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -245,22 +288,32 @@ export default function Visualizer() {
               <Button onClick={applyCustomInput}>Load</Button>
             </div>
 
-            {/* Visualizer Canvas */}
+            {/* Visualizer Canvas - Conditional Rendering */}
             {steps.length > 0 && (
-              <ArrayVisualizer 
-                step={steps[currentStepIndex]} 
-                maxValue={Math.max(...initialArray, 100)} 
-              />
-            )}
-
-            {/* Timeline Scrubber */}
-            {steps.length > 0 && (
-              <TimelineScrubber
-                currentStep={currentStepIndex}
-                totalSteps={steps.length}
-                onStepChange={handleTimelineChange}
-                isPlaying={isPlaying}
-              />
+              comparisonMode ? (
+                <ComparisonView
+                  algorithmA={algorithm}
+                  algorithmB={algorithmB}
+                  initialArray={initialArray}
+                  currentStepIndex={currentStepIndex}
+                  maxValue={Math.max(...initialArray, 100)}
+                />
+              ) : (
+                <>
+                  <ArrayVisualizer 
+                    step={steps[currentStepIndex]} 
+                    maxValue={Math.max(...initialArray, 100)} 
+                  />
+                  
+                  {/* Timeline Scrubber */}
+                  <TimelineScrubber
+                    currentStep={currentStepIndex}
+                    totalSteps={steps.length}
+                    onStepChange={handleTimelineChange}
+                    isPlaying={isPlaying}
+                  />
+                </>
+              )
             )}
 
             {/* Playback Controls */}
@@ -281,7 +334,7 @@ export default function Visualizer() {
 
           {/* Right Column: Info Panel */}
           <div className="lg:col-span-1">
-            {steps.length > 0 && (
+            {steps.length > 0 && !comparisonMode && (
               <InfoPanel 
                 algorithm={algorithm} 
                 step={steps[currentStepIndex]} 
