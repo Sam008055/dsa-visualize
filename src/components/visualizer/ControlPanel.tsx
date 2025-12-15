@@ -159,9 +159,9 @@ export function ControlPanel({
         </div>
 
         <div className="flex flex-col gap-3 w-full md:w-80">
-          <div className="flex justify-between text-xs text-muted-foreground font-medium">
-            <span>Speed: <span className="text-primary font-bold">{speed}x</span></span>
-            <span>Step <span className="text-primary font-bold">{currentStep + 1}</span> of {totalSteps}</span>
+          <div className="flex justify-between items-center text-xs text-muted-foreground font-medium gap-4">
+            <span className="whitespace-nowrap">Speed: <span className="text-primary font-bold">{speed}x</span></span>
+            <span className="whitespace-nowrap">Step <span className="text-primary font-bold">{currentStep + 1}</span> of {totalSteps}</span>
           </div>
           <div className="relative">
             <Slider
