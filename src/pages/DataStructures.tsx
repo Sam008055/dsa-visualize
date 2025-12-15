@@ -527,9 +527,9 @@ export default function DataStructures() {
             <div className="lg:col-span-2 space-y-6">
               <Card className="glass-card border-white/10 shadow-level-2 overflow-hidden">
                 <CardHeader className="pb-2">
-                  <CardTitle className="flex justify-between items-center">
+                  <CardTitle className="flex flex-col gap-2">
                     <span>Visualization</span>
-                    <span className="text-sm font-normal text-muted-foreground font-mono">
+                    <span className="text-sm font-normal text-muted-foreground font-mono break-words">
                       {steps[currentStepIndex]?.explanation}
                     </span>
                   </CardTitle>
