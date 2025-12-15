@@ -11,11 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SortingStep } from "@/lib/sortingAlgorithms";
 import { soundManager } from "@/lib/soundManager";
 import { toast } from "sonner";
-import { Play, RotateCcw, Plus, Minus, Network, GitGraph } from "lucide-react";
+import { Play, RotateCcw, Plus, Minus, Network, GitGraph, Search, Trash2, Route } from "lucide-react";
 import { TreeVisualizer } from "@/components/visualizer/TreeVisualizer";
 import { GraphVisualizer } from "@/components/visualizer/GraphVisualizer";
-import { insertNode } from "@/lib/algorithms/tree";
-import { bfs, dfs } from "@/lib/algorithms/graph";
+import { insertNode, searchTree, traverseTree } from "@/lib/algorithms/tree";
+import { bfs, dfs, findShortestPath } from "@/lib/algorithms/graph";
 import { TreeNode, GraphData, GraphNode, GraphEdge } from "@/lib/algorithms/types";
 
 type DSType = "Stack Operations" | "Queue Operations" | "Tree Operations" | "Graph Operations";
@@ -36,6 +36,7 @@ export default function DataStructures() {
   const [speed, setSpeed] = useState(1);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [inputValue, setInputValue] = useState("");
+  const [secondInputValue, setSecondInputValue] = useState(""); // For path finding or edge creation
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Tree State
@@ -123,6 +124,38 @@ export default function DataStructures() {
     setInputValue("");
   };
 
+  const handleTreeSearch = () => {
+    const val = parseInt(inputValue);
+    if (isNaN(val)) {
+      toast.error("Please enter a valid number");
+      return;
+    }
+    const currentRoot = steps[steps.length - 1]?.tree || treeRoot;
+    if (!currentRoot) {
+      toast.error("Tree is empty");
+      return;
+    }
+    const newSteps: SortingStep[] = [];
+    searchTree(currentRoot, val, newSteps);
+    setSteps(newSteps);
+    setCurrentStepIndex(0);
+    setIsPlaying(true);
+    setInputValue("");
+  };
+
+  const handleTreeTraversal = (type: 'inorder' | 'preorder' | 'postorder') => {
+    const currentRoot = steps[steps.length - 1]?.tree || treeRoot;
+    if (!currentRoot) {
+      toast.error("Tree is empty");
+      return;
+    }
+    const newSteps: SortingStep[] = [];
+    traverseTree(currentRoot, type, newSteps);
+    setSteps(newSteps);
+    setCurrentStepIndex(0);
+    setIsPlaying(true);
+  };
+
   // Graph Operations
   const handleAddGraphNode = () => {
     const val = parseInt(inputValue);
@@ -152,6 +185,34 @@ export default function DataStructures() {
     setInputValue("");
   };
 
+  const handleRemoveGraphNode = () => {
+    const val = parseInt(inputValue);
+    if (isNaN(val)) {
+      toast.error("Please enter a valid number");
+      return;
+    }
+    
+    const nodeToRemove = graphData.nodes.find(n => n.value === val);
+    if (!nodeToRemove) {
+      toast.error("Node not found");
+      return;
+    }
+
+    const newGraph = {
+      nodes: graphData.nodes.filter(n => n.id !== nodeToRemove.id),
+      edges: graphData.edges.filter(e => e.source !== nodeToRemove.id && e.target !== nodeToRemove.id),
+      isDirected: graphData.isDirected
+    };
+
+    setGraphData(newGraph);
+    setSteps([{
+      ...steps[0],
+      graph: newGraph,
+      explanation: `Removed node ${val}`
+    }]);
+    setInputValue("");
+  };
+
   const handleAddGraphEdge = () => {
     if (graphData.nodes.length < 2) {
       toast.error("Need at least 2 nodes to create an edge");
@@ -175,6 +236,30 @@ export default function DataStructures() {
       graph: newGraph,
       explanation: `Added edge between ${source.value} and ${target.value}`
     }]);
+  };
+
+  const handleFindPath = () => {
+    const startVal = parseInt(inputValue);
+    const endVal = parseInt(secondInputValue);
+    
+    if (isNaN(startVal) || isNaN(endVal)) {
+      toast.error("Please enter valid start and end values");
+      return;
+    }
+
+    const startNode = graphData.nodes.find(n => n.value === startVal);
+    const endNode = graphData.nodes.find(n => n.value === endVal);
+
+    if (!startNode || !endNode) {
+      toast.error("Start or end node not found");
+      return;
+    }
+
+    const newSteps: SortingStep[] = [];
+    findShortestPath(graphData, startNode.id, endNode.id, newSteps);
+    setSteps(newSteps);
+    setCurrentStepIndex(0);
+    setIsPlaying(true);
   };
 
   const handleGraphBFS = () => {
@@ -455,6 +540,7 @@ export default function DataStructures() {
                     <TreeVisualizer 
                       root={steps[currentStepIndex]?.tree || treeRoot}
                       currentNodeId={steps[currentStepIndex]?.current}
+                      visitedIds={steps[currentStepIndex]?.visited}
                     />
                   ) : (
                     <GraphVisualizer 
@@ -535,8 +621,26 @@ export default function DataStructures() {
                     </Button>
                   )}
 
+                  {activeTab === "Tree Operations" && (
+                    <div className="space-y-2">
+                      <Button onClick={handleTreeSearch} variant="secondary" className="w-full">
+                        <Search className="w-4 h-4 mr-2" />
+                        Search
+                      </Button>
+                      <div className="grid grid-cols-3 gap-1">
+                        <Button onClick={() => handleTreeTraversal('inorder')} variant="outline" size="sm" className="text-xs">Inorder</Button>
+                        <Button onClick={() => handleTreeTraversal('preorder')} variant="outline" size="sm" className="text-xs">Preorder</Button>
+                        <Button onClick={() => handleTreeTraversal('postorder')} variant="outline" size="sm" className="text-xs">Postorder</Button>
+                      </div>
+                    </div>
+                  )}
+
                   {activeTab === "Graph Operations" && (
                     <div className="space-y-2">
+                      <Button onClick={handleRemoveGraphNode} variant="destructive" className="w-full">
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Remove Node
+                      </Button>
                       <Button onClick={handleAddGraphEdge} variant="outline" className="w-full">
                         <Network className="w-4 h-4 mr-2" />
                         Add Random Edge
@@ -544,6 +648,22 @@ export default function DataStructures() {
                       <div className="grid grid-cols-2 gap-2">
                         <Button onClick={handleGraphBFS} variant="secondary">BFS</Button>
                         <Button onClick={handleGraphDFS} variant="secondary">DFS</Button>
+                      </div>
+                      
+                      <div className="pt-2 border-t">
+                        <p className="text-xs text-muted-foreground mb-2">Path Finding</p>
+                        <div className="flex gap-2 mb-2">
+                          <Input 
+                            placeholder="To Value" 
+                            type="number" 
+                            value={secondInputValue}
+                            onChange={(e) => setSecondInputValue(e.target.value)}
+                          />
+                        </div>
+                        <Button onClick={handleFindPath} variant="default" className="w-full">
+                          <Route className="w-4 h-4 mr-2" />
+                          Find Path (From Input 1 to 2)
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -578,12 +698,20 @@ export default function DataStructures() {
                     <>
                       <p><strong>Binary Search Tree (BST)</strong></p>
                       <p>Nodes are arranged such that left child &lt; parent &lt; right child.</p>
+                      <p><strong>Traversals:</strong></p>
+                      <ul className="list-disc pl-4 space-y-1">
+                        <li>Inorder: Left, Root, Right</li>
+                        <li>Preorder: Root, Left, Right</li>
+                        <li>Postorder: Left, Right, Root</li>
+                      </ul>
                     </>
                   )}
                   {activeTab === "Graph Operations" && (
                     <>
                       <p><strong>Graph Traversal</strong></p>
                       <p>BFS explores neighbors level by level. DFS explores as deep as possible along each branch.</p>
+                      <p><strong>Path Finding</strong></p>
+                      <p>Uses BFS to find the shortest path between two nodes in an unweighted graph.</p>
                     </>
                   )}
                   {activeTab === "Stack Operations" && (

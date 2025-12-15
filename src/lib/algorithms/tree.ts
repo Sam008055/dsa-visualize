@@ -191,3 +191,174 @@ export function insertNode(root: TreeNode | null, value: number, steps: SortingS
 
   return newRoot!;
 }
+
+export function searchTree(root: TreeNode | null, value: number, steps: SortingStep[]) {
+  let current = root;
+  steps.push({
+    array: [],
+    comparing: [],
+    swapping: [],
+    sorted: [],
+    tree: root,
+    explanation: `Searching for ${value}...`,
+    comparisons: 0,
+    swaps: 0,
+    current: current?.id
+  });
+
+  while (current) {
+    steps.push({
+      array: [],
+      comparing: [],
+      swapping: [],
+      sorted: [],
+      tree: root,
+      explanation: `Checking ${current.value}...`,
+      comparisons: 0,
+      swaps: 0,
+      current: current.id
+    });
+
+    if (value === current.value) {
+      steps.push({
+        array: [],
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        tree: root,
+        explanation: `Found ${value}!`,
+        comparisons: 0,
+        swaps: 0,
+        current: current.id,
+        visited: [current.id]
+      });
+      return true;
+    }
+
+    if (value < current.value) {
+      steps.push({
+        array: [],
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        tree: root,
+        explanation: `${value} < ${current.value}, going left`,
+        comparisons: 0,
+        swaps: 0,
+        current: current.left?.id || current.id
+      });
+      current = current.left;
+    } else {
+      steps.push({
+        array: [],
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        tree: root,
+        explanation: `${value} > ${current.value}, going right`,
+        comparisons: 0,
+        swaps: 0,
+        current: current.right?.id || current.id
+      });
+      current = current.right;
+    }
+  }
+
+  steps.push({
+    array: [],
+    comparing: [],
+    swapping: [],
+    sorted: [],
+    tree: root,
+    explanation: `${value} not found in tree`,
+    comparisons: 0,
+    swaps: 0
+  });
+  return false;
+}
+
+export function traverseTree(root: TreeNode | null, type: 'inorder' | 'preorder' | 'postorder', steps: SortingStep[]) {
+  const visited: string[] = [];
+  
+  const traverse = (node: TreeNode | null) => {
+    if (!node) return;
+
+    if (type === 'preorder') {
+      visited.push(node.id);
+      steps.push({
+        array: [],
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        tree: root,
+        explanation: `Visiting ${node.value} (Preorder)`,
+        comparisons: 0,
+        swaps: 0,
+        current: node.id,
+        visited: [...visited]
+      });
+    }
+
+    traverse(node.left);
+
+    if (type === 'inorder') {
+      visited.push(node.id);
+      steps.push({
+        array: [],
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        tree: root,
+        explanation: `Visiting ${node.value} (Inorder)`,
+        comparisons: 0,
+        swaps: 0,
+        current: node.id,
+        visited: [...visited]
+      });
+    }
+
+    traverse(node.right);
+
+    if (type === 'postorder') {
+      visited.push(node.id);
+      steps.push({
+        array: [],
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        tree: root,
+        explanation: `Visiting ${node.value} (Postorder)`,
+        comparisons: 0,
+        swaps: 0,
+        current: node.id,
+        visited: [...visited]
+      });
+    }
+  };
+
+  steps.push({
+    array: [],
+    comparing: [],
+    swapping: [],
+    sorted: [],
+    tree: root,
+    explanation: `Starting ${type} traversal`,
+    comparisons: 0,
+    swaps: 0,
+    visited: []
+  });
+
+  traverse(root);
+
+  steps.push({
+    array: [],
+    comparing: [],
+    swapping: [],
+    sorted: [],
+    tree: root,
+    explanation: `${type} traversal complete`,
+    comparisons: 0,
+    swaps: 0,
+    visited: [...visited]
+  });
+}

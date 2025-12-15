@@ -184,3 +184,79 @@ export function dfs(graph: GraphData, startNodeId: string, steps: SortingStep[])
     swaps: 0
   });
 }
+
+export function findShortestPath(graph: GraphData, startId: string, endId: string, steps: SortingStep[]) {
+  const queue: { id: string; path: string[] }[] = [{ id: startId, path: [startId] }];
+  const visited = new Set<string>();
+  visited.add(startId);
+
+  steps.push({
+    array: [],
+    comparing: [],
+    swapping: [],
+    sorted: [],
+    graph: graph,
+    explanation: `Finding shortest path from ${graph.nodes.find(n => n.id === startId)?.value} to ${graph.nodes.find(n => n.id === endId)?.value}`,
+    comparisons: 0,
+    swaps: 0,
+    current: startId,
+    visited: [startId]
+  });
+
+  while (queue.length > 0) {
+    const { id, path } = queue.shift()!;
+    
+    if (id === endId) {
+      steps.push({
+        array: [],
+        comparing: [],
+        swapping: [],
+        sorted: [],
+        graph: graph,
+        explanation: `Found path! Length: ${path.length - 1}`,
+        comparisons: 0,
+        swaps: 0,
+        current: id,
+        visited: path // Highlight the path
+      });
+      return;
+    }
+
+    const neighbors = graph.edges
+      .filter(e => e.source === id || (!graph.isDirected && e.target === id))
+      .map(e => e.source === id ? e.target : e.source);
+
+    for (const neighborId of neighbors) {
+      if (!visited.has(neighborId)) {
+        visited.add(neighborId);
+        const newPath = [...path, neighborId];
+        queue.push({ id: neighborId, path: newPath });
+        
+        steps.push({
+          array: [],
+          comparing: [],
+          swapping: [],
+          sorted: [],
+          graph: graph,
+          explanation: `Exploring ${graph.nodes.find(n => n.id === neighborId)?.value}`,
+          comparisons: 0,
+          swaps: 0,
+          current: neighborId,
+          visited: [...Array.from(visited)] // Show visited so far
+        });
+      }
+    }
+  }
+
+  steps.push({
+    array: [],
+    comparing: [],
+    swapping: [],
+    sorted: [],
+    graph: graph,
+    explanation: `No path found`,
+    comparisons: 0,
+    swaps: 0,
+    visited: Array.from(visited)
+  });
+}
