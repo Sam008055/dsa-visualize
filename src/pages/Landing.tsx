@@ -3,10 +3,12 @@ import { motion } from "framer-motion";
 import { ArrowRight, BarChart3, Zap, Code2, Moon, Sun } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Landing() {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   // Toggle Dark Mode with smooth transition
   useEffect(() => {
@@ -55,8 +57,14 @@ export default function Landing() {
               </motion.div>
             </Button>
           </motion.div>
-          <Button variant="ghost" onClick={() => navigate("/auth")}>Sign In</Button>
-          <Button onClick={() => navigate("/visualizer")}>Launch App</Button>
+          {!isAuthenticated ? (
+            <>
+              <Button variant="ghost" onClick={() => navigate("/auth")}>Sign In</Button>
+              <Button onClick={() => navigate("/auth")}>Get Started</Button>
+            </>
+          ) : (
+            <Button onClick={() => navigate("/visualizer")}>Dashboard</Button>
+          )}
         </div>
       </nav>
 
@@ -84,8 +92,8 @@ export default function Landing() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <Button size="lg" className="h-12 px-8 text-lg" onClick={() => navigate("/visualizer")}>
-              Start Visualizing <ArrowRight className="ml-2 h-5 w-5" />
+            <Button size="lg" className="h-12 px-8 text-lg" onClick={() => navigate(isAuthenticated ? "/visualizer" : "/auth")}>
+              {isAuthenticated ? "Go to Dashboard" : "Start Visualizing"} <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" className="h-12 px-8 text-lg">
               View on GitHub

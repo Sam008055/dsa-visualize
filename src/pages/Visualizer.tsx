@@ -10,8 +10,14 @@ import { VisualizerControls } from "@/components/visualizer/VisualizerControls";
 import { Navbar } from "@/components/Navbar";
 import { soundManager } from "@/lib/soundManager";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router";
 
 export default function Visualizer() {
+  const { isLoading: authLoading, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  
   const [algorithm, setAlgorithm] = useState<AlgorithmType>("Bubble Sort");
   const [algorithmB, setAlgorithmB] = useState<AlgorithmType>("Merge Sort");
   const [comparisonMode, setComparisonMode] = useState(false);
@@ -140,6 +146,27 @@ export default function Visualizer() {
       soundManager.dispose();
     };
   }, []);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate("/auth");
+    }
+  }, [authLoading, isAuthenticated, navigate]);
+
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const generateRandomArray = (size: number) => {
     const newArray = Array.from({ length: size }, () => Math.floor(Math.random() * 100) + 5);

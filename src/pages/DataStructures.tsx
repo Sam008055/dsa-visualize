@@ -17,10 +17,16 @@ import { GraphVisualizer } from "@/components/visualizer/GraphVisualizer";
 import { insertNode, searchTree, traverseTree } from "@/lib/algorithms/tree";
 import { bfs, dfs, findShortestPath } from "@/lib/algorithms/graph";
 import { TreeNode, GraphData, GraphNode, GraphEdge } from "@/lib/algorithms/types";
+import { useAuth } from "@/hooks/use-auth";
+import { useNavigate } from "react-router";
+import { Loader2 } from "lucide-react";
 
 type DSType = "Stack Operations" | "Queue Operations" | "Tree Operations" | "Graph Operations";
 
 export default function DataStructures() {
+  const { isLoading: authLoading, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  
   const [activeTab, setActiveTab] = useState<DSType>("Stack Operations");
   const [steps, setSteps] = useState<SortingStep[]>([{
     array: [],
@@ -47,6 +53,13 @@ export default function DataStructures() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate("/auth");
+    }
+  }, [authLoading, isAuthenticated, navigate]);
 
   // Initialize
   useEffect(() => {
@@ -106,6 +119,20 @@ export default function DataStructures() {
   useEffect(() => {
     soundManager.setEnabled(soundEnabled);
   }, [soundEnabled]);
+
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   // Tree Operations
   const handleTreeInsert = () => {
