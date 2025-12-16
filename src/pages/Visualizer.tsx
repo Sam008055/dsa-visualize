@@ -34,6 +34,13 @@ export default function Visualizer() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const prevStepRef = useRef<SortingStep | null>(null);
 
+  const generateRandomArray = (size: number) => {
+    const newArray = Array.from({ length: size }, () => Math.floor(Math.random() * 100) + 5);
+    setInitialArray(newArray);
+    setCustomInput(newArray.join(", "));
+    setArraySize(size);
+  };
+
   // Initialize random array
   useEffect(() => {
     generateRandomArray(20);
@@ -167,13 +174,6 @@ export default function Visualizer() {
   if (!isAuthenticated) {
     return null;
   }
-
-  const generateRandomArray = (size: number) => {
-    const newArray = Array.from({ length: size }, () => Math.floor(Math.random() * 100) + 5);
-    setInitialArray(newArray);
-    setCustomInput(newArray.join(", "));
-    setArraySize(size);
-  };
 
   const handleCustomInput = (e: ChangeEvent<HTMLInputElement>) => {
     setCustomInput(e.target.value);
