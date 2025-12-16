@@ -19,9 +19,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  // Redirect to auth if not authenticated
+  // Redirect to auth if not authenticated, preserving the intended destination
   if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
+    const currentPath = window.location.pathname;
+    return <Navigate to={`/auth?redirect=${encodeURIComponent(currentPath)}`} replace />;
   }
 
   // Render protected content if authenticated
