@@ -222,14 +222,14 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
             </motion.div>
 
             {/* User Profile Dropdown */}
-            {isAuthenticated && user ? (
+            {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full bg-white/10 hover:bg-white/20 border-0 h-10 w-10">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.image} alt={user.name || "User"} />
+                      <AvatarImage src={user?.image} alt={user?.name || "User"} />
                       <AvatarFallback className="bg-primary/20 text-white text-xs">
-                        {getInitials(user.name)}
+                        {getInitials(user?.name)}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -237,8 +237,8 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user.name || "User"}</p>
-                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                      <p className="text-sm font-medium">{user?.name || "User"}</p>
+                      <p className="text-xs text-muted-foreground">{user?.email || "Loading..."}</p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
