@@ -31,18 +31,19 @@ export default function Profile() {
     twitter: user?.twitter || "",
   });
 
-  // Redirect if not authenticated
-  if (!isLoading && !isAuthenticated) {
-    navigate("/auth");
-    return null;
-  }
-
+  // Show loading state while checking auth
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
+  }
+
+  // Redirect if not authenticated - do this synchronously before any rendering
+  if (!isAuthenticated) {
+    navigate("/auth");
+    return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

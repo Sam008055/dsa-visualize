@@ -154,13 +154,6 @@ export default function Visualizer() {
     };
   }, []);
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate("/auth");
-    }
-  }, [authLoading, isAuthenticated, navigate]);
-
   // Show loading state while checking auth
   if (authLoading) {
     return (
@@ -170,8 +163,9 @@ export default function Visualizer() {
     );
   }
 
-  // Don't render if not authenticated
+  // Redirect if not authenticated - do this synchronously before any rendering
   if (!isAuthenticated) {
+    navigate("/auth");
     return null;
   }
 

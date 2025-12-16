@@ -54,13 +54,6 @@ export default function DataStructures() {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate("/auth");
-    }
-  }, [authLoading, isAuthenticated, navigate]);
-
   // Initialize
   useEffect(() => {
     resetDS();
@@ -129,8 +122,9 @@ export default function DataStructures() {
     );
   }
 
-  // Don't render if not authenticated
+  // Redirect if not authenticated - do this synchronously before any rendering
   if (!isAuthenticated) {
+    navigate("/auth");
     return null;
   }
 
