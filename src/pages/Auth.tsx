@@ -71,11 +71,13 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setError(null);
     try {
       const formData = new FormData(event.currentTarget);
+      // Ensure the code is properly set in the FormData
+      formData.set("code", otp);
       await signIn("email-otp", formData);
       // Navigation will be handled by the useEffect above
     } catch (error) {
       console.error("OTP verification error:", error);
-      setError("The verification code you entered is incorrect.");
+      setError("The verification code you entered is incorrect. Please try again.");
       setIsLoading(false);
       setOtp("");
     }
