@@ -24,8 +24,6 @@ import { Loader2 } from "lucide-react";
 type DSType = "Stack Operations" | "Queue Operations" | "Tree Operations" | "Graph Operations";
 
 export default function DataStructures() {
-  const { isLoading: authLoading, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState<DSType>("Stack Operations");
   const [steps, setSteps] = useState<SortingStep[]>([{
@@ -112,21 +110,6 @@ export default function DataStructures() {
   useEffect(() => {
     soundManager.setEnabled(soundEnabled);
   }, [soundEnabled]);
-
-  // Show loading state while checking auth
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Redirect if not authenticated - do this synchronously before any rendering
-  if (!isAuthenticated) {
-    navigate("/auth");
-    return null;
-  }
 
   // Tree Operations
   const handleTreeInsert = () => {

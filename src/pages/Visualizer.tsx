@@ -10,14 +10,8 @@ import { VisualizerControls } from "@/components/visualizer/VisualizerControls";
 import { Navbar } from "@/components/Navbar";
 import { soundManager } from "@/lib/soundManager";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/use-auth";
-import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router";
 
 export default function Visualizer() {
-  const { isLoading: authLoading, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  
   const [algorithm, setAlgorithm] = useState<AlgorithmType>("Bubble Sort");
   const [algorithmB, setAlgorithmB] = useState<AlgorithmType>("Merge Sort");
   const [comparisonMode, setComparisonMode] = useState(false);
@@ -153,21 +147,6 @@ export default function Visualizer() {
       soundManager.dispose();
     };
   }, []);
-
-  // Show loading state while checking auth
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Redirect if not authenticated - do this synchronously before any rendering
-  if (!isAuthenticated) {
-    navigate("/auth");
-    return null;
-  }
 
   const handleCustomInput = (e: ChangeEvent<HTMLInputElement>) => {
     setCustomInput(e.target.value);

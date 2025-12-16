@@ -15,7 +15,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export default function Profile() {
-  const { isLoading, isAuthenticated, user, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -30,21 +30,6 @@ export default function Profile() {
     github: user?.github || "",
     twitter: user?.twitter || "",
   });
-
-  // Show loading state while checking auth
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Redirect if not authenticated - do this synchronously before any rendering
-  if (!isAuthenticated) {
-    navigate("/auth");
-    return null;
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

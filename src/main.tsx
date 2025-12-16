@@ -6,6 +6,7 @@ import { ConvexReactClient } from "convex/react";
 import { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import "./index.css";
 import "./types/global.d.ts";
 
@@ -61,9 +62,30 @@ createRoot(document.getElementById("root")!).render(
           <Suspense fallback={<RouteLoading />}>
             <Routes>
               <Route path="/" element={<Landing />} />
-              <Route path="/visualizer" element={<Visualizer />} />
-              <Route path="/data-structures" element={<DataStructures />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route 
+                path="/visualizer" 
+                element={
+                  <ProtectedRoute>
+                    <Visualizer />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/data-structures" 
+                element={
+                  <ProtectedRoute>
+                    <DataStructures />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/auth" element={<AuthPage redirectAfterAuth="/visualizer" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
