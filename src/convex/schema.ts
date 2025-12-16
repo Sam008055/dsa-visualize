@@ -30,14 +30,14 @@ const schema = defineSchema(
       isAnonymous: v.optional(v.boolean()), // is the user anonymous. do not remove
 
       role: v.optional(roleValidator), // role of the user. do not remove
+      
+      // Profile fields
+      bio: v.optional(v.string()),
+      location: v.optional(v.string()),
+      website: v.optional(v.string()),
+      github: v.optional(v.string()),
+      twitter: v.optional(v.string()),
     }).index("email", ["email"]), // index for the email. do not remove or modify
-
-    // add other tables here
-
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
   },
   {
     schemaValidation: false,

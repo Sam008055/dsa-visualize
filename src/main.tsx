@@ -14,6 +14,7 @@ const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Visualizer = lazy(() => import("./pages/Visualizer.tsx"));
 const DataStructures = lazy(() => import("./pages/DataStructures.tsx"));
+const Profile = lazy(() => import("./pages/Profile.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -62,6 +63,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/" element={<Landing />} />
               <Route path="/visualizer" element={<Visualizer />} />
               <Route path="/data-structures" element={<DataStructures />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/auth" element={<AuthPage redirectAfterAuth="/visualizer" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
