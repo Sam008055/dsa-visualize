@@ -225,14 +225,14 @@ export function Navbar({ isDarkMode, onToggleDarkMode }: NavbarProps) {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full bg-white/10 hover:bg-white/20 border-0 h-10 w-10">
+                  <button className="rounded-full bg-white/10 hover:bg-white/20 border-0 h-10 w-10 flex items-center justify-center transition-colors">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user?.image} alt={user?.name || "User"} />
                       <AvatarFallback className="bg-primary/20 text-white text-xs">
                         {getInitials(user?.name)}
                       </AvatarFallback>
                     </Avatar>
-                  </Button>
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
