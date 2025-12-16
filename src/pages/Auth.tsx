@@ -85,7 +85,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      await signIn(provider, { redirectTo: window.location.origin + finalRedirect });
+      await signIn(provider);
     } catch (error) {
       console.error(`${provider} sign-in error:`, error);
       setError(`Failed to sign in with ${provider}. Please try again.`);
