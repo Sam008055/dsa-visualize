@@ -38,7 +38,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      navigate(finalRedirect);
+      // Use setTimeout to ensure navigation happens after render
+      setTimeout(() => {
+        navigate(finalRedirect, { replace: true });
+      }, 0);
     }
   }, [authLoading, isAuthenticated, navigate, finalRedirect]);
   
@@ -69,15 +72,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     try {
       const formData = new FormData(event.currentTarget);
       await signIn("email-otp", formData);
-
-      console.log("signed in");
-      navigate(finalRedirect);
+      // Navigation will be handled by the useEffect above
     } catch (error) {
       console.error("OTP verification error:", error);
-
       setError("The verification code you entered is incorrect.");
       setIsLoading(false);
-
       setOtp("");
     }
   };
@@ -86,7 +85,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      await signIn(provider);
+      await signIn(provider, { redirectTo: window.location.origin + finalRedirect });
     } catch (error) {
       console.error(`${provider} sign-in error:`, error);
       setError(`Failed to sign in with ${provider}. Please try again.`);
