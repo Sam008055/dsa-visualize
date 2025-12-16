@@ -38,10 +38,9 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      // Use setTimeout to ensure navigation happens after render
-      setTimeout(() => {
-        navigate(finalRedirect, { replace: true });
-      }, 0);
+      // Redirect authenticated users to the visualizer
+      console.log("User authenticated, redirecting to:", finalRedirect);
+      navigate(finalRedirect, { replace: true });
     }
   }, [authLoading, isAuthenticated, navigate, finalRedirect]);
   
@@ -74,7 +73,9 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       // Ensure the code is properly set in the FormData
       formData.set("code", otp);
       await signIn("email-otp", formData);
-      // Navigation will be handled by the useEffect above
+      // After successful sign-in, explicitly navigate to visualizer
+      console.log("OTP verified, navigating to:", finalRedirect);
+      navigate(finalRedirect, { replace: true });
     } catch (error) {
       console.error("OTP verification error:", error);
       setError("The verification code you entered is incorrect. Please try again.");
